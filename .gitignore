@@ -1,0 +1,19 @@
+terraform-provider-xmatters
+
+# IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+.checkstyle
+
+# VS Code
+/.vscode
+
+# MacOS
+**/.DS_Store

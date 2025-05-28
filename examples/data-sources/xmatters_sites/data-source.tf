@@ -15,6 +15,6 @@ data "xmatters_sites" "get_sites_with_search" {
   search = {
     terms   = "Headquarters"
     operand = "AND"
-    fields  = "NAME"
+    fields  = ["NAME"]
   }
 }

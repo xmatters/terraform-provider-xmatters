@@ -27,7 +27,7 @@ data "xmatters_services" "get_service_list_with_search" {
   search = {
     terms   = "database postgres"
     operand = "OR"
-    fields  = "NAME"
+    fields  = ["NAME"]
   }
 }
 ```

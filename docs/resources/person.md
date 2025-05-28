@@ -22,7 +22,7 @@ resource "xmatters_person" "basic_create" {
   web_login    = "mmcbride"
   first_name   = "Margot"
   last_name    = "McBride"
-  roles        = "Full Access User"
+  roles        = ["Full Access User"]
   timezone     = "US/Pacific"
   language     = "en"
   license_type = "FULL_USER"
@@ -48,13 +48,11 @@ resource "xmatters_person" "advanced_person" {
     "481086d8-357a-4279-b7d5-d7dce48fcd12",
     "545686d8-3491-4a12-ddb7-a33239e82bc7"
   ]
-  password             = "PassWord123!"
-  force_password_reset = true
-  phone_login          = "123456789"
-  phone_pin            = "9728"
-  license_type         = "FULL_USER"
-  external_key         = "c5aa0fff0a0a0aa7009a39da035ea396"
-  externally_owned     = true
+  phone_login      = "123456789"
+  phone_pin        = "9728"
+  license_type     = "FULL_USER"
+  external_key     = "c5aa0fff0a0a0aa7009a39da035ea396"
+  externally_owned = true
 }
 ```
 

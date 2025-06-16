@@ -16,7 +16,7 @@ xMatters is a digital service reliability platform that helps users reduce the b
 terraform {
   required_providers {
     xmatters = {
-      source  = "github.com/xmatters/terraform-provider-xmatters"
+      source  = "xmatters/xmatters"
       version = "~> 0.1.0"
     }
   }

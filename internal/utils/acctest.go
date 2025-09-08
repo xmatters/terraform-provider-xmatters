@@ -88,7 +88,7 @@ func RandomLongitudePointer() *float64 {
 
 // RandBool generates a random boolean
 func RandBool() bool {
-	return rand.IntN(1) == 0 //rand.IntN(2) == 0
+	return rand.IntN(2) == 0 //rand.IntN(2) == 0
 }
 
 // RandBoolPointer generates a random boolean and returns a pointer
@@ -205,8 +205,10 @@ func RandServiceTierAttr() string {
 func RandDeviceTypeAttr() string {
 	deviceTypes := []string{
 		"EMAIL",
-		"TEXT_PHONE",
 		"VOICE",
+		"VOICE_IVR",
+		"TEXT_PHONE",
+		"TEXT_PAGER",
 	}
 	return deviceTypes[rand.IntN(len(deviceTypes))]
 }
@@ -232,16 +234,22 @@ func RandDeviceTestStatusAttr() string {
 
 func RandDeviceNameAttr(dType string) string {
 	voiceNames := []string{"Work Phone", "Mobile Phone", "Home Phone"}
+	broadcastNames := []string{"Public Broadcast", "Company Broadcast"}
 	emailNames := []string{"Work Email", "Home Email"}
 	smsNames := "SMS Phone"
+	pagerNames := []string{"Work Pager", "Home Pager"}
 
 	switch dType {
 	case "VOICE":
 		return voiceNames[rand.IntN(len(voiceNames))]
+	case "VOICE_IVR":
+		return broadcastNames[rand.IntN(len(broadcastNames))]
 	case "EMAIL":
 		return emailNames[rand.IntN(len(emailNames))]
 	case "TEXT_PHONE":
 		return smsNames
+	case "TEXT_PAGER":
+		return pagerNames[rand.IntN(len(pagerNames))]
 	default:
 		return RandString(10)
 	}

@@ -75,7 +75,7 @@ resource "xmatters_person" "advanced_person" {
 ### Optional
 
 - `external_key` (String) Unique identifier of a resource in an external system.
-- `externally_owned` (Boolean) Whether the object is managed by an external system. Available options are: true, false. Default value is false'.
+- `externally_owned` (Boolean) Whether the object is managed by an external system. Available options are: true, false. Default value is false.
 - `phone_login` (String) An access code for the user to identify themselves when they phone into xMatters to retrieve messages. The phone login has a maximum length of 30 characters and must only contain digits. You can also set an optional phone PIN for the user.
 - `phone_pin` (String, Sensitive) Used with phone_login, the optional PIN a user enters to identify themselves when they phone into xMatters to retrieve messages. The PIN has a maximum length of 30 characters and must only contain digits. Once submitted in the request, the phone PIN is not returned or displayed in the response object.
 - `status` (String) Status of the user in xMatters. Available options are: ACTIVE, INACTIVE. Default is ACTIVE.

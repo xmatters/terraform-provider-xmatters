@@ -85,7 +85,7 @@ func (in PeopleModel) APIParams(diags *diag.Diagnostics) xmatters.GetPeopleParam
 		peopleParams.DevicesTestStatus = in.Filters.DevicesTestStatus.ValueString()
 		peopleParams.EmailAddress = in.Filters.EmailAddress.ValueString()
 		peopleParams.FirstName = in.Filters.FirstName.ValueString()
-		peopleParams.Groups = utils.ExpandEncodedStringList(diags, in.Filters.Groups)
+		peopleParams.Groups = utils.ExpandEncodedStringList(diags, in.Filters.Groups) // Due to the way the API is designed, we need to URL-encode the group names prior to sending the request
 		peopleParams.GroupsExists = in.Filters.GroupsExists.ValueBoolPointer()
 		peopleParams.LastName = in.Filters.LastName.ValueString()
 		peopleParams.LicenseType = in.Filters.LicenseType.ValueString()

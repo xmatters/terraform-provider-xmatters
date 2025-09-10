@@ -12,6 +12,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
+	deviceDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/device"
+	devicesDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/devices"
 	peopleDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/people"
 	personDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/person"
 	serviceDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/service"
@@ -20,6 +22,7 @@ import (
 	sitesDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/sites"
 	userQuotasDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/userQuotas"
 	"github.com/xmatters/terraform-provider-xmatters/internal/describe"
+	deviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/device"
 	personR "github.com/xmatters/terraform-provider-xmatters/internal/resources/person"
 	serviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/service"
 	serviceDependency "github.com/xmatters/terraform-provider-xmatters/internal/resources/serviceDependency"
@@ -126,6 +129,7 @@ func (p *XMattersProvider) Resources(ctx context.Context) []func() resource.Reso
 		serviceDependency.NewServiceDependencyResource,
 		personR.NewPersonResource,
 		siteR.NewSiteResource,
+		deviceR.NewDeviceResource,
 	}
 }
 
@@ -139,6 +143,8 @@ func (p *XMattersProvider) DataSources(ctx context.Context) []func() datasource.
 		userQuotasDS.NewUserQuotasDataSource,
 		siteDS.NewSiteDataSource,
 		sitesDS.NewSitesDataSource,
+		deviceDS.NewDeviceDataSource,
+		devicesDS.NewDevicesDataSource,
 	}
 }
 

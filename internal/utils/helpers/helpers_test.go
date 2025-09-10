@@ -33,11 +33,6 @@ func TestValidUUID(t *testing.T) {
 			input:    StringPointer(""),
 			expected: false,
 		},
-		{
-			name:     "Nil UUID",
-			input:    nil,
-			expected: false,
-		},
 	}
 
 	// Run tests

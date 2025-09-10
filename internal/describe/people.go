@@ -89,7 +89,7 @@ const (
 	PersonResourcePhonePin           = "Used with phone_login, the optional PIN a user enters to identify themselves when they phone into xMatters to retrieve messages. The PIN has a maximum length of 30 characters and must only contain digits. Once submitted in the request, the phone PIN is not returned or displayed in the response object."
 	PersonResourceLicenseType        = "xMatters user license type. Available options are: FULL_USER, STAKEHOLDER_USER. Default is FULL_USER."
 	PersonResourceExternalKey        = "Unique identifier of a resource in an external system."
-	PersonResourceExternallyOwned    = "Whether the object is managed by an external system. Available options are: true, false. Default value is false'."
+	PersonResourceExternallyOwned    = "Whether the object is managed by an external system. Available options are: true, false. Default value is false."
 	PersonResourceProperties         = "Values of custom fields and custom attributes for this person."
 	PersonResourceTextProperty       = "Property value that accepts a string. Supports Text, Password, and List property types."
 	PersonResourceIntProperty        = "Property value that accepts a numeric value.  Supports Number property type."

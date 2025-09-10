@@ -140,10 +140,10 @@ var (
 	// Define the Timeframe object type.
 	TimeframeObjectType = types.ObjectType{
 		AttrTypes: map[string]attr.Type{
-			"days":                types.SetType{ElemType: types.StringType},
+			"days":                types.SetType{ElemType: customTypes.CustomStringType{}},
 			"duration_in_minutes": types.Int32Type,
 			"exclude_holidays":    types.BoolType,
-			"name":                types.StringType,
+			"name":                customTypes.CustomStringType{},
 			"start_time":          types.StringType,
 		},
 	}
@@ -315,6 +315,10 @@ func FlattenPersonObject(diags *diag.Diagnostics, in *xmatters.Person) basetypes
 	if in == nil {
 		return types.ObjectNull(PersonObjectType.AttrTypes)
 	}
+	var siteID *string
+	if in.Site != nil {
+		siteID = in.Site.ID
+	}
 	personObject, d := types.ObjectValue(PersonObjectType.AttrTypes,
 		map[string]attr.Value{
 			"id":               types.StringPointerValue(in.ID),
@@ -324,7 +328,7 @@ func FlattenPersonObject(diags *diag.Diagnostics, in *xmatters.Person) basetypes
 			"roles":            FlattenRoleSet(diags, in.Roles),
 			"status":           types.StringPointerValue(in.Status),
 			"web_login":        customTypes.StringPointerValue(in.WebLogin),
-			"site":             types.StringPointerValue(in.Site.ID),
+			"site":             types.StringPointerValue(siteID),
 			"timezone":         customTypes.StringPointerValue(in.Timezone),
 			"language":         customTypes.StringPointerValue(in.Language),
 			"supervisors":      FlattenSupervisorSet(diags, in.Supervisors),
@@ -379,9 +383,9 @@ func FlattenTimeframeObject(diags *diag.Diagnostics, in *xmatters.DeviceTimefram
 
 	daysElems := make([]attr.Value, 0, len(in.Days))
 	for _, d := range in.Days {
-		daysElems = append(daysElems, types.StringPointerValue(d))
+		daysElems = append(daysElems, customTypes.StringPointerValue(d))
 	}
-	daysSet, d := types.SetValue(types.StringType, daysElems)
+	daysSet, d := types.SetValue(customTypes.CustomStringType{}, daysElems)
 	if diags.Append(d...); d.HasError() {
 		return types.ObjectNull(TimeframeObjectType.AttrTypes)
 	}
@@ -392,7 +396,7 @@ func FlattenTimeframeObject(diags *diag.Diagnostics, in *xmatters.DeviceTimefram
 			"days":                daysSet,
 			"duration_in_minutes": types.Int32PointerValue(in.DurationInMinutes),
 			"exclude_holidays":    types.BoolPointerValue(in.ExcludeHolidays),
-			"name":                types.StringPointerValue(in.Name),
+			"name":                customTypes.StringPointerValue(in.Name),
 			"start_time":          types.StringPointerValue(in.StartTime),
 		},
 	)
@@ -402,7 +406,7 @@ func FlattenTimeframeObject(diags *diag.Diagnostics, in *xmatters.DeviceTimefram
 	return objectReturn
 }
 
-// FlattenTimeframeSet returns a new `basetypes.ObjectValue` from the provided `xmatters.Device` object.
+// FlattenDeviceObject returns a new `basetypes.ObjectValue` from the provided `xmatters.Device` object.
 // If the provided object is nil, a null object with appropriate attribute types is returned.
 func FlattenDeviceObject(diags *diag.Diagnostics, in *xmatters.Device) basetypes.ObjectValue {
 	if in == nil {
@@ -841,14 +845,6 @@ func ExpandGroupMemberSet(diags *diag.Diagnostics, in basetypes.SetValue) []*xma
 	}
 	return members
 }
-
-// ------------------------------------------------------------
-// Map Flatteners
-// ------------------------------------------------------------
-
-// ------------------------------------------------------------
-// Map Expanders
-// ------------------------------------------------------------
 
 // ------------------------------------------------------------
 // Primitive Flatteners

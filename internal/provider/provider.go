@@ -14,6 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	deviceDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/device"
 	devicesDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/devices"
+	groupDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/group"
+	groupsDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/groups"
 	peopleDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/people"
 	personDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/person"
 	serviceDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/service"
@@ -23,6 +25,8 @@ import (
 	userQuotasDS "github.com/xmatters/terraform-provider-xmatters/internal/data-sources/userQuotas"
 	"github.com/xmatters/terraform-provider-xmatters/internal/describe"
 	deviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/device"
+	groupR "github.com/xmatters/terraform-provider-xmatters/internal/resources/group"
+	groupRosterR "github.com/xmatters/terraform-provider-xmatters/internal/resources/groupRoster"
 	personR "github.com/xmatters/terraform-provider-xmatters/internal/resources/person"
 	serviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/service"
 	serviceDependency "github.com/xmatters/terraform-provider-xmatters/internal/resources/serviceDependency"
@@ -128,6 +132,8 @@ func (p *XMattersProvider) Resources(ctx context.Context) []func() resource.Reso
 		serviceR.NewServiceResource,
 		serviceDependency.NewServiceDependencyResource,
 		personR.NewPersonResource,
+		groupR.NewGroupResource,
+		groupRosterR.NewGroupRosterResource,
 		siteR.NewSiteResource,
 		deviceR.NewDeviceResource,
 	}
@@ -141,6 +147,8 @@ func (p *XMattersProvider) DataSources(ctx context.Context) []func() datasource.
 		serviceDS.NewServiceDataSource,
 		servicesDS.NewServicesDataSource,
 		userQuotasDS.NewUserQuotasDataSource,
+		groupDS.NewGroupDataSource,
+		groupsDS.NewGroupsDataSource,
 		siteDS.NewSiteDataSource,
 		sitesDS.NewSitesDataSource,
 		deviceDS.NewDeviceDataSource,

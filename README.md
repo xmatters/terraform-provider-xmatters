@@ -1,6 +1,6 @@
 # xMatters Terraform Provider
 
-This Terraform provider enables users to interact with the xMatters platform via its REST API. The provider allows management of various xMatters objects such as users, devices, and services using Terraform configuration files.
+This Terraform provider enables users to interact with the xMatters platform via its REST API. The provider allows management of various xMatters objects such as users, groups, devices, and services using Terraform configuration files.
 
 ## Features
 

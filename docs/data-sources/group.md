@@ -27,6 +27,34 @@ data "xmatters_group" "get_group_by_id" {
 
 ### Read-Only
 
+- `allow_duplicates` (Boolean) When set to true group members can be added to an escalation timeline multiple times and recipients can receive multiple notifications for the same event targeting the group.
+- `criteria` (Attributes) (see [below for nested schema](#nestedatt--criteria))
 - `description` (String) A description of the group, can be a maximum of 1024 characters.
+- `external_key` (String) Unique identifier of a group in an external system.
+- `externally_owned` (Boolean) Whether the group is managed by an external system.
+- `group_type` (String) The type of group in xMatters. Available options are BROADCAST, DYNAMIC, and ON_CALL.
 - `id` (String) Unique identifier (UUID) of the xMatters group.
 - `name` (String) Name used to identify this group.
+- `observed_by_all` (Boolean) True if groups can locate and send notifications to the group regardless of their role. If this value is false, only groups who have the selected roles can observe the group.
+- `observers` (Set of String) Unique identifier (UUID) or target name of the role or roles set as observers for the group. Adding observer roles via the xMatters REST API overwrites any existing observers for the group. You can only add specific observers to a group if observedByAll is set to false.
+- `site` (String) Unique identifier (UUID) of the site where the group is assigned.
+- `status` (String) Status of the group in xMatters.  Available options are: ACTIVE, INACTIVE.
+- `supervisors` (Set of String) A list of the supervisors of the group.
+
+<a id="nestedatt--criteria"></a>
+### Nested Schema for `criteria`
+
+Read-Only:
+
+- `criterion` (Attributes List) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--criteria--criterion))
+- `operand` (String) The operand to use to limit or expand the search query parameter: AND or OR. AND only returns dynamic groups that have all search terms in the name or description. OR returns dynamic groups that have any of the search terms in the name or description.
+
+<a id="nestedatt--criteria--criterion"></a>
+### Nested Schema for `criteria.criterion`
+
+Read-Only:
+
+- `criterion_type` (String) The criterion type. Available options are: BASIC_FIELD, CUSTOM_FIELD
+- `field` (String) The field being evaluated. Available options for a basic field are: FIRST_NAME, LAST_NAME, SITE, USER_ID, WEB_LOGIN, ROLE_NAME. The option for a custom field is the user-defined custom field.
+- `operand` (String) How the property is being evaluated. Available options for a basic field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS. Available options for a custom field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS, true, false.
+- `value` (String) The value to evaluate the criteria against.

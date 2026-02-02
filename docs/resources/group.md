@@ -45,6 +45,7 @@ resource "xmatters_group" "advanced_group" {
 ### Optional
 
 - `allow_duplicates` (Boolean) If set to 'true', group members can be added to an escalation timeline multiple times, and recipients can receive more than one notification for the same event targeting the group.
+- `criteria` (Attributes) (see [below for nested schema](#nestedatt--criteria))
 - `description` (String) Description of the group, to a maximum of 1024 characters.
 - `external_key` (String) Unique identifier of a resource in an external system.
 - `externally_owned` (Boolean) Whether the object is managed by an external system. Available options are: true, false. Default value is false.
@@ -60,3 +61,21 @@ resource "xmatters_group" "advanced_group" {
 
 - `id` (String) Unique identifier (UUID) of the xMatters group.
 - `last_updated` (String)
+
+<a id="nestedatt--criteria"></a>
+### Nested Schema for `criteria`
+
+Read-Only:
+
+- `criterion` (Attributes List) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--criteria--criterion))
+- `operand` (String) Sets whether a user must match all or any of the specified criterion to be included in the group. Available values: - AND: users must match all criterion - OR: users must match at least one criterion.
+
+<a id="nestedatt--criteria--criterion"></a>
+### Nested Schema for `criteria.criterion`
+
+Read-Only:
+
+- `criterion_type` (String) The criterion type. Available options are: BASIC_FIELD, CUSTOM_FIELD
+- `field` (String) The field being evaluated. Available options for a basic field are: FIRST_NAME, LAST_NAME, SITE, USER_ID, WEB_LOGIN, ROLE_NAME. The option for a custom field is the user-defined custom field.
+- `operand` (String) How the property is being evaluated. Available options for a basic field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS. Available options for a custom field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS, true, false.
+- `value` (String) The value to evaluate the criteria against.

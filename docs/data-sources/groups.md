@@ -72,9 +72,14 @@ data "xmatters_groups" "get_groups_sorted" {
 
 Optional:
 
+- `created_after` (String) Timestamp in ISO format. Returns a list of groups created after the provided value. Can be used on its own or in conjunction with the ‘createdBefore’ and ‘createdTo’ parameters.
+- `created_before` (String) Timestamp in ISO format. Returns a list of groups created before the provided value. Can be used on its own or in conjunction with the ‘createdAfter’ and ‘createdFrom’ parameters.
+- `created_from` (String) Timestamp in ISO format. Returns a list of groups created at or after the provided value. Can be used on its own or in conjunction with the ‘createdTo’ and ‘createdBefore’ parameters.
+- `created_to` (String) Timestamp in ISO format. Returns a list of groups created up to and until the provided value. Can be used on its own or in conjunction with the ‘createdFrom’ and ‘createdAfter’ parameters.
 - `group_type` (String) Returns a list of groups of the specified type: Available options are: ON_CALL, BROADCAST, DYNAMIC.
 - `member_exists` (String) Returns a list of groups that have shifts created, but no members added to the shifts. Available options are: ALL_SHIFTS: Returns a list of groups that have no members added to any shifts. ANY_SHIFTS: Returns a list of groups that have at least one shift with no members.
 - `members` (List of String) Unique identifier (UUID) or Base64 encoded target name of a user, device, or group. Returns a list of groups that contains at least one of the specified members.
+- `members_license_type` (String) Returns a list of groups that contain at least one member (or a device that belongs to a user) who has the specified license type. The member does not have to be part of any shifts for the group to be included in the response. Available values are: FULL_USER, STAKEHOLDER_USER.
 - `sites` (List of String) Returns a list of groups for the specified sites. You can specify the site using its unique identifier (UUID) or target name (case-insensitive), or both. When two or more sites are sent in the request, the response includes groups for which either site is assigned.
 - `status` (String) Returns all groups with the specified status. Available options are: ACTIVE, INACTIVE.
 - `supervisors` (List of String) Target names or unique identifiers (UUID) of group supervisors. Returns a list of groups assigned to the specified supervisors. Values can be combined in a comma-separated list. When multiple supervisors are specified, the response returns users who are assigned to at least one of the supervisors.
@@ -105,6 +110,7 @@ Optional:
 Read-Only:
 
 - `allow_duplicates` (Boolean) When set to true group members can be added to an escalation timeline multiple times and recipients can receive multiple notifications for the same event targeting the group.
+- `criteria` (Attributes) (see [below for nested schema](#nestedatt--groups--criteria))
 - `description` (String) A description of the group, can be a maximum of 1024 characters.
 - `external_key` (String) Unique identifier of a group in an external system.
 - `externally_owned` (Boolean) Whether the group is managed by an external system.
@@ -113,29 +119,25 @@ Read-Only:
 - `name` (String) Name used to identify this group.
 - `observed_by_all` (Boolean) True if groups can locate and send notifications to the group regardless of their role. If this value is false, only groups who have the selected roles can observe the group.
 - `observers` (Set of String) Unique identifier (UUID) or target name of the role or roles set as observers for the group. Adding observer roles via the xMatters REST API overwrites any existing observers for the group. You can only add specific observers to a group if observedByAll is set to false.
-- `services` (Attributes Set) List of available xMatters services. (see [below for nested schema](#nestedatt--groups--services))
 - `site` (String) Unique identifier (UUID) of the site where the group is assigned.
 - `status` (String) Status of the group in xMatters.  Available options are: ACTIVE, INACTIVE.
 - `supervisors` (Set of String) A list of the supervisors of the group.
-- `timezone` (String) Default time zone of the group represented by the the two-letter country code followed by the city name.
+- `use_default_devices` (Boolean) If set to 'true' the group can notify members on their failsafe (default) devices if none of the member's other devices are available.
 
-<a id="nestedatt--groups--services"></a>
-### Nested Schema for `groups.services`
-
-Read-Only:
-
-- `description` (String) Description of the service.
-- `id` (String) Unique identifier (UUID) of the xMatters service.
-- `links` (Attributes Set) List of links associated to the service and list of user-specified links for the service. (see [below for nested schema](#nestedatt--groups--services--links))
-- `name` (String) Name of the service.
-- `owner` (String) Unique identifier (UUID) or target name of the group that owns the xMatters service. Partial matches are not permitted.
-- `tier` (String) xMatters service tier.
-- `type` (String) xMatters service type.
-
-<a id="nestedatt--groups--services--links"></a>
-### Nested Schema for `groups.services.links`
+<a id="nestedatt--groups--criteria"></a>
+### Nested Schema for `groups.criteria`
 
 Read-Only:
 
-- `link_text` (String) Link text displayed to the user.
-- `url` (String) Direct URL for the link.
+- `criterion` (Attributes List) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--groups--criteria--criterion))
+- `operand` (String) The operand to use to limit or expand the search query parameter: AND or OR. AND only returns dynamic groups that have all search terms in the name or description. OR returns dynamic groups that have any of the search terms in the name or description.
+
+<a id="nestedatt--groups--criteria--criterion"></a>
+### Nested Schema for `groups.criteria.criterion`
+
+Read-Only:
+
+- `criterion_type` (String) The criterion type. Available options are: BASIC_FIELD, CUSTOM_FIELD
+- `field` (String) The field being evaluated. Available options for a basic field are: FIRST_NAME, LAST_NAME, SITE, USER_ID, WEB_LOGIN, ROLE_NAME. The option for a custom field is the user-defined custom field.
+- `operand` (String) How the property is being evaluated. Available options for a basic field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS. Available options for a custom field are: EQUALS, BEGINS_WITH, ENDS_WITH, CONTAINS, true, false.
+- `value` (String) The value to evaluate the criteria against.

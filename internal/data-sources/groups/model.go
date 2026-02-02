@@ -23,12 +23,17 @@ type GroupsSearchModel struct {
 }
 
 type GroupsFiltersModel struct {
-	GroupType    types.String `tfsdk:"group_type" tf:"optional"`
-	MemberExists types.String `tfsdk:"member_exists" tf:"optional"`
-	Members      types.List   `tfsdk:"members" tf:"optional"`
-	Sites        types.List   `tfsdk:"sites" tf:"optional"`
-	Status       types.String `tfsdk:"status" tf:"optional"`
-	Supervisors  types.List   `tfsdk:"supervisors" tf:"optional"`
+	CreatedAfter       types.String `tfsdk:"created_after" tf:"optional"`
+	CreatedBefore      types.String `tfsdk:"created_before" tf:"optional"`
+	CreatedFrom        types.String `tfsdk:"created_from" tf:"optional"`
+	CreatedTo          types.String `tfsdk:"created_to" tf:"optional"`
+	GroupType          types.String `tfsdk:"group_type" tf:"optional"`
+	MemberExists       types.String `tfsdk:"member_exists" tf:"optional"`
+	MembersLicenseType types.String `tfsdk:"members_license_type" tf:"optional"`
+	Members            types.List   `tfsdk:"members" tf:"optional"`
+	Sites              types.List   `tfsdk:"sites" tf:"optional"`
+	Status             types.String `tfsdk:"status" tf:"optional"`
+	Supervisors        types.List   `tfsdk:"supervisors" tf:"optional"`
 }
 
 // GroupsOptionsModel contains the options fields for the Provider's Groups data source.
@@ -50,8 +55,13 @@ func (in GroupsModel) APIParams(diags *diag.Diagnostics) xmatters.GetGroupsParam
 	}
 	// Check for user provider Filter fields
 	if in.Filters != nil {
+		groupsParams.CreatedAfter = in.Filters.CreatedAfter.ValueString()
+		groupsParams.CreatedBefore = in.Filters.CreatedBefore.ValueString()
+		groupsParams.CreatedFrom = in.Filters.CreatedFrom.ValueString()
+		groupsParams.CreatedTo = in.Filters.CreatedTo.ValueString()
 		groupsParams.GroupType = in.Filters.GroupType.ValueString()
 		groupsParams.MemberExists = in.Filters.MemberExists.ValueString()
+		groupsParams.MemberLicenseType = in.Filters.MembersLicenseType.ValueString()
 		groupsParams.Members = utils.ExpandStringList(diags, in.Filters.Members)
 		groupsParams.Sites = utils.ExpandStringList(diags, in.Filters.Sites)
 		groupsParams.Status = in.Filters.Status.ValueString()

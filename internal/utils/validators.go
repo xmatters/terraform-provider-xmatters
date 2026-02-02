@@ -452,3 +452,37 @@ func (v SortOrderValidator) ValidateString(ctx context.Context, req validator.St
 		fmt.Sprintf("'%s' must be one of the following values: %v.", req.Path, validSortOrders),
 	)
 }
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------
+// Group Type Validator
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------
+type GroupTypeValidator struct {
+	RequiredValue string
+}
+
+func (v GroupTypeValidator) Description(ctx context.Context) string {
+	return fmt.Sprintf("The criteria block can only be set when 'group_type' is '%s'.", v.RequiredValue)
+}
+
+func (v GroupTypeValidator) MarkdownDescription(ctx context.Context) string {
+	return v.Description(ctx)
+}
+
+func (v GroupTypeValidator) ValidateObject(ctx context.Context, req validator.ObjectRequest, resp *validator.ObjectResponse) {
+	// Get the group_type attribute from the config
+	var groupTypeValue types.String
+	req.Config.GetAttribute(ctx, path.Root("group_type"), &groupTypeValue)
+
+	// If criteria is set, group_type must match RequiredValue
+	if !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown() {
+		if groupTypeValue.ValueString() != v.RequiredValue {
+			resp.Diagnostics.AddAttributeError(
+				req.Path,
+				"Invalid criteria",
+				fmt.Sprintf("The criteria block can only be set when 'group_type' is '%s'.", v.RequiredValue),
+			)
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------------------------------

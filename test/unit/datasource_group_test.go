@@ -34,14 +34,20 @@ func TestGroupToModel(t *testing.T) {
 				ID: utils.RandUUIDPointer(),
 			},
 		},
-		Services: []*xmatters.Service{
-			{
-				ID:         utils.RandUUIDPointer(),
-				TargetName: utils.RandStringPointer(10),
+		ExternalKey:       utils.RandStringPointer(10),
+		ExternallyOwned:   utils.RandBoolPointer(),
+		UseDefaultDevices: utils.RandBoolPointer(),
+		Criteria: &xmatters.SearchCriteria{
+			Operand: utils.RandOperandPointer(),
+			Criterion: []*xmatters.SearchCriterion{
+				{
+					CriterionType: utils.RandStringPointer(10),
+					Field:         utils.RandStringPointer(10),
+					Operand:       utils.RandOperandPointer(),
+					Value:         utils.RandStringPointer(15),
+				},
 			},
 		},
-		ExternalKey:     utils.RandStringPointer(10),
-		ExternallyOwned: utils.RandBoolPointer(),
 	}
 
 	tests := []struct {
@@ -70,9 +76,8 @@ func TestGroupToModel(t *testing.T) {
 					types.StringType,
 					[]attr.Value{},
 				),
-				Services: types.SetValueMust(
-					utils.ServiceObjectType,
-					[]attr.Value{},
+				Criteria: types.ObjectNull(
+					utils.GroupCriteriaObjectType.AttrTypes,
 				),
 			},
 		},
@@ -86,44 +91,44 @@ func TestGroupToModel(t *testing.T) {
 				in:    testGroup,
 			},
 			expected: group.GroupModel{
-				ID:              types.StringPointerValue(testGroup.ID),
-				TargetName:      types.StringPointerValue(testGroup.TargetName),
-				Description:     types.StringPointerValue(testGroup.Description),
-				Status:          types.StringPointerValue(testGroup.Status),
-				ExternalKey:     types.StringPointerValue(testGroup.ExternalKey),
-				ExternallyOwned: types.BoolPointerValue(testGroup.ExternallyOwned),
-				AllowDuplicates: types.BoolPointerValue(testGroup.AllowDuplicates),
-				Timezone:        types.StringPointerValue(testGroup.Timezone),
-				Site:            utils.FlattenReferenceID(testGroup.Site),
-				ObservedByAll:   types.BoolPointerValue(testGroup.ObservedByAll),
-				GroupType:       types.StringPointerValue(testGroup.GroupType),
+				ID:                types.StringPointerValue(testGroup.ID),
+				Name:              types.StringPointerValue(testGroup.TargetName),
+				Description:       types.StringPointerValue(testGroup.Description),
+				Status:            types.StringPointerValue(testGroup.Status),
+				ExternalKey:       types.StringPointerValue(testGroup.ExternalKey),
+				ExternallyOwned:   types.BoolPointerValue(testGroup.ExternallyOwned),
+				AllowDuplicates:   types.BoolPointerValue(testGroup.AllowDuplicates),
+				UseDefaultDevices: types.BoolPointerValue(testGroup.UseDefaultDevices),
+				Site:              utils.FlattenReferenceID(testGroup.Site),
+				ObservedByAll:     types.BoolPointerValue(testGroup.ObservedByAll),
+				GroupType:         types.StringPointerValue(testGroup.GroupType),
 				Observers: types.SetValueMust(
 					customTypes.CustomStringType{},
 					[]attr.Value{
-						customTypes.StringValue(*testGroup.Observers[0].Name),
+						customTypes.StringPointerValue(testGroup.Observers[0].Name),
 					},
 				),
 				Supervisors: types.SetValueMust(
 					types.StringType,
 					[]attr.Value{
-						types.StringValue(*testGroup.Supervisors[0].ID),
+						types.StringPointerValue(testGroup.Supervisors[0].ID),
 					},
 				),
-				Services: types.SetValueMust(
-					utils.ServiceObjectType,
-					[]attr.Value{
-						types.ObjectValueMust(
-							utils.ServiceObjectType.AttrTypes,
-							map[string]attr.Value{
-								"id":          types.StringPointerValue(testGroup.Services[0].ID),
-								"name":        customTypes.StringPointerValue(testGroup.Services[0].TargetName),
-								"description": customTypes.StringPointerValue(nil),
-								"type":        customTypes.StringPointerValue(nil),
-								"tier":        types.StringPointerValue(nil),
-								"owner":       types.StringPointerValue(nil),
-								"links": types.SetValueMust(
-									utils.ServiceLinkObjectType,
-									[]attr.Value{},
+				Criteria: types.ObjectValueMust(
+					utils.GroupCriteriaObjectType.AttrTypes,
+					map[string]attr.Value{
+						"operand": types.StringPointerValue(testGroup.Criteria.Operand),
+						"criterion": types.SetValueMust(
+							utils.GroupCriterionObjectType,
+							[]attr.Value{
+								types.ObjectValueMust(
+									utils.GroupCriterionObjectType.AttrTypes,
+									map[string]attr.Value{
+										"criterion_type": types.StringPointerValue(testGroup.Criteria.Criterion[0].CriterionType),
+										"field":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Field),
+										"operand":        types.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
+										"value":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
+									},
 								),
 							},
 						),

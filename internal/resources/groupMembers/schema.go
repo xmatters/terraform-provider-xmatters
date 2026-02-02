@@ -1,4 +1,4 @@
-package groupRoster
+package groupMembers
 
 import (
 	"context"
@@ -13,13 +13,13 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-func (r *GroupRosterResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+func (r *GroupMembersResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Returns a groupRoster in your xMatters instance that matches the provided criteria.",
+		MarkdownDescription: "Returns a groupMembers resource object in your xMatters instance that matches the provided criteria.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Required:            true,
-				MarkdownDescription: describe.GroupRosterResourceID,
+				MarkdownDescription: describe.GroupMembersResourceID,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.UseStateForUnknown(),
 				},
@@ -29,24 +29,24 @@ func (r *GroupRosterResource) Schema(ctx context.Context, req resource.SchemaReq
 			},
 			"group": schema.ObjectAttribute{
 				Computed:            true,
-				MarkdownDescription: describe.GroupRosterResourceGroup,
+				MarkdownDescription: describe.GroupMembersResourceGroup,
 				AttributeTypes:      utils.GroupReferenceObjectType.AttrTypes,
 			},
 			"members": schema.SetNestedAttribute{
 				Required:            true,
-				MarkdownDescription: describe.GroupRosterResourceMembers,
+				MarkdownDescription: describe.GroupMembersResourceMembers,
 				NestedObject: schema.NestedAttributeObject{
 					Attributes: map[string]schema.Attribute{
 						"id": schema.StringAttribute{
 							Required:            true,
-							MarkdownDescription: describe.GroupRosterResourceMemberID,
+							MarkdownDescription: describe.GroupMembersResourceMemberID,
 							Validators: []validator.String{
 								utils.UUIDValidator{},
 							},
 						},
 						"member_type": schema.StringAttribute{
 							Required:            true,
-							MarkdownDescription: describe.GroupRosterResourceMemberType,
+							MarkdownDescription: describe.GroupMembersResourceMemberType,
 						},
 					},
 				},

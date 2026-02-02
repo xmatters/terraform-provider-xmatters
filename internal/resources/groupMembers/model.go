@@ -1,11 +1,11 @@
-package groupRoster
+package groupMembers
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// GroupRosterModel represents an xMatters GroupRoster object in the Provider.
-type GroupRosterModel struct {
+// GroupMembersModel represents an xMatters GroupMembers object in the Provider.
+type GroupMembersModel struct {
 	ID          types.String `tfsdk:"id"`
 	Group       types.Object `tfsdk:"group"`
 	Members     types.Set    `tfsdk:"members"`

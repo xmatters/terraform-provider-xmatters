@@ -11,7 +11,7 @@ import (
 // GroupModel represents an xMatters Group object in the Provider.
 type GroupModel struct {
 	ID                types.String                  `tfsdk:"id"`
-	TargetName        customTypes.CustomStringValue `tfsdk:"name"`
+	Name              customTypes.CustomStringValue `tfsdk:"name"`
 	Status            types.String                  `tfsdk:"status"`
 	Description       customTypes.CustomStringValue `tfsdk:"description"`
 	GroupType         types.String                  `tfsdk:"group_type"`
@@ -23,6 +23,7 @@ type GroupModel struct {
 	Supervisors       types.Set                     `tfsdk:"supervisors"`
 	ExternalKey       customTypes.CustomStringValue `tfsdk:"external_key"`
 	ExternallyOwned   types.Bool                    `tfsdk:"externally_owned"`
+	Criteria          types.Object                  `tfsdk:"criteria"`
 	LastUpdated       types.String                  `tfsdk:"last_updated"`
 }
 
@@ -31,7 +32,7 @@ type GroupModel struct {
 func (in GroupModel) GroupParams(diags *diag.Diagnostics) xmatters.PushGroupParams {
 	groupParams := xmatters.PushGroupParams{
 		ID:          in.ID.ValueString(),
-		TargetName:  in.TargetName.ValueString(),
+		TargetName:  in.Name.ValueString(),
 		Description: in.Description.ValueString(),
 		ExternalKey: in.ExternalKey.ValueString(),
 		GroupType:   in.GroupType.ValueString(),
@@ -39,6 +40,7 @@ func (in GroupModel) GroupParams(diags *diag.Diagnostics) xmatters.PushGroupPara
 		Site:        in.Site.ValueString(),
 		Status:      in.Status.ValueString(),
 		Supervisors: utils.ExpandReferenceIDSet(diags, in.Supervisors),
+		Criteria:    utils.ExpandGroupCriteriaObject(diags, in.Criteria),
 	}
 	// Following attributes are bool or integer parameters set as computed so should only be sent to the API if configured
 	if !in.ObservedByAll.IsUnknown() {

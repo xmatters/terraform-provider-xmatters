@@ -14,18 +14,23 @@ import (
 
 func TestGroupsAPIParams(t *testing.T) {
 	testParams := xmatters.GetGroupsParams{
-		Embed:        "supervisors,observers",
-		Terms:        utils.RandString(5),
-		Operand:      utils.RandString(5),
-		Fields:       utils.RandString(5),
-		GroupType:    utils.RandString(5),
-		MemberExists: utils.RandString(5),
-		Members:      utils.RandString(8),
-		Sites:        utils.RandString(8),
-		Status:       utils.RandString(5),
-		Supervisors:  utils.RandString(8),
-		SortBy:       utils.RandString(4),
-		SortOrder:    utils.RandString(4),
+		Embed:             "supervisors,observers",
+		Terms:             utils.RandString(5),
+		Operand:           utils.RandString(5),
+		Fields:            utils.RandString(5),
+		CreatedAfter:      utils.RandString(5),
+		CreatedBefore:     utils.RandString(5),
+		CreatedFrom:       utils.RandString(5),
+		CreatedTo:         utils.RandString(5),
+		GroupType:         utils.RandString(5),
+		MemberExists:      utils.RandString(5),
+		MemberLicenseType: utils.RandString(5),
+		Members:           utils.RandString(8),
+		Sites:             utils.RandString(8),
+		Status:            utils.RandString(5),
+		Supervisors:       utils.RandString(8),
+		SortBy:            utils.RandString(4),
+		SortOrder:         utils.RandString(4),
 	}
 
 	type args struct {
@@ -78,8 +83,13 @@ func TestGroupsAPIParams(t *testing.T) {
 				diags: &diag.Diagnostics{},
 				model: groups.GroupsModel{
 					Filters: &groups.GroupsFiltersModel{
-						GroupType:    types.StringValue(testParams.GroupType),
-						MemberExists: types.StringValue(testParams.MemberExists),
+						CreatedAfter:       types.StringValue(testParams.CreatedAfter),
+						CreatedBefore:      types.StringValue(testParams.CreatedBefore),
+						CreatedFrom:        types.StringValue(testParams.CreatedFrom),
+						CreatedTo:          types.StringValue(testParams.CreatedTo),
+						GroupType:          types.StringValue(testParams.GroupType),
+						MemberExists:       types.StringValue(testParams.MemberExists),
+						MembersLicenseType: types.StringValue(testParams.MemberLicenseType),
 						Members: types.ListValueMust(
 							types.StringType,
 							[]attr.Value{
@@ -103,13 +113,18 @@ func TestGroupsAPIParams(t *testing.T) {
 				},
 			},
 			expect: xmatters.GetGroupsParams{
-				Embed:        "supervisors,observers",
-				GroupType:    testParams.GroupType,
-				MemberExists: testParams.MemberExists,
-				Members:      testParams.Members,
-				Sites:        testParams.Sites,
-				Status:       testParams.Status,
-				Supervisors:  testParams.Supervisors,
+				Embed:             "supervisors,observers",
+				CreatedAfter:      testParams.CreatedAfter,
+				CreatedBefore:     testParams.CreatedBefore,
+				CreatedFrom:       testParams.CreatedFrom,
+				CreatedTo:         testParams.CreatedTo,
+				GroupType:         testParams.GroupType,
+				MemberExists:      testParams.MemberExists,
+				MemberLicenseType: testParams.MemberLicenseType,
+				Members:           testParams.Members,
+				Sites:             testParams.Sites,
+				Status:            testParams.Status,
+				Supervisors:       testParams.Supervisors,
 			},
 		},
 		{
@@ -145,8 +160,13 @@ func TestGroupsAPIParams(t *testing.T) {
 						),
 					},
 					Filters: &groups.GroupsFiltersModel{
-						GroupType:    types.StringValue(testParams.GroupType),
-						MemberExists: types.StringValue(testParams.MemberExists),
+						CreatedAfter:       types.StringValue(testParams.CreatedAfter),
+						CreatedBefore:      types.StringValue(testParams.CreatedBefore),
+						CreatedFrom:        types.StringValue(testParams.CreatedFrom),
+						CreatedTo:          types.StringValue(testParams.CreatedTo),
+						GroupType:          types.StringValue(testParams.GroupType),
+						MemberExists:       types.StringValue(testParams.MemberExists),
+						MembersLicenseType: types.StringValue(testParams.MemberLicenseType),
 						Members: types.ListValueMust(
 							types.StringType,
 							[]attr.Value{

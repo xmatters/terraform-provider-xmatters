@@ -26,7 +26,7 @@ import (
 	"github.com/xmatters/terraform-provider-xmatters/internal/describe"
 	deviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/device"
 	groupR "github.com/xmatters/terraform-provider-xmatters/internal/resources/group"
-	groupRosterR "github.com/xmatters/terraform-provider-xmatters/internal/resources/groupRoster"
+	groupMembersR "github.com/xmatters/terraform-provider-xmatters/internal/resources/groupMembers"
 	personR "github.com/xmatters/terraform-provider-xmatters/internal/resources/person"
 	serviceR "github.com/xmatters/terraform-provider-xmatters/internal/resources/service"
 	serviceDependency "github.com/xmatters/terraform-provider-xmatters/internal/resources/serviceDependency"
@@ -133,7 +133,7 @@ func (p *XMattersProvider) Resources(ctx context.Context) []func() resource.Reso
 		serviceDependency.NewServiceDependencyResource,
 		personR.NewPersonResource,
 		groupR.NewGroupResource,
-		groupRosterR.NewGroupRosterResource,
+		groupMembersR.NewGroupMembersResource,
 		siteR.NewSiteResource,
 		deviceR.NewDeviceResource,
 	}

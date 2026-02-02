@@ -199,7 +199,6 @@ func TestFlattenGroupObject(t *testing.T) {
 		ExternalKey:     RandStringPointer(10),
 		ExternallyOwned: RandBoolPointer(),
 		AllowDuplicates: RandBoolPointer(),
-		Timezone:        RandStringPointer(10),
 		Site: &xmatters.ReferenceById{
 			ID: RandUUIDPointer(),
 		},
@@ -214,25 +213,19 @@ func TestFlattenGroupObject(t *testing.T) {
 				ID: RandUUIDPointer(),
 			},
 		},
-		Services: []*xmatters.Service{
-			{
-				ID:          RandUUIDPointer(),
-				TargetName:  RandStringPointer(10),
-				Description: RandStringPointer(10),
-				ServiceType: RandStringPointer(10),
-				ServiceTier: RandStringPointer(10),
-				OwnedBy: &xmatters.GroupReference{
-					ID: RandUUIDPointer(),
-				},
-				ServiceLinks: []*xmatters.ServiceLink{
-					{
-						Label: RandStringPointer(10),
-						URL:   RandStringPointer(10),
-					},
+		GroupType:         RandStringPointer(10),
+		UseDefaultDevices: RandBoolPointer(),
+		Criteria: &xmatters.SearchCriteria{
+			Operand: RandStringPointer(3),
+			Criterion: []*xmatters.SearchCriterion{
+				{
+					CriterionType: RandStringPointer(10),
+					Field:         RandStringPointer(10),
+					Operand:       RandStringPointer(5),
+					Value:         RandStringPointer(10),
 				},
 			},
 		},
-		GroupType: RandStringPointer(10),
 	}
 	type args struct {
 		diags *diag.Diagnostics
@@ -267,7 +260,6 @@ func TestFlattenGroupObject(t *testing.T) {
 					"external_key":     types.StringPointerValue(testGroup.ExternalKey),
 					"externally_owned": types.BoolPointerValue(testGroup.ExternallyOwned),
 					"allow_duplicates": types.BoolPointerValue(testGroup.AllowDuplicates),
-					"timezone":         types.StringPointerValue(testGroup.Timezone),
 					"site":             types.StringPointerValue(testGroup.Site.ID),
 					"observed_by_all":  types.BoolPointerValue(testGroup.ObservedByAll),
 					"observers": types.SetValueMust(
@@ -282,35 +274,28 @@ func TestFlattenGroupObject(t *testing.T) {
 							types.StringPointerValue(testGroup.Supervisors[0].ID),
 						},
 					),
-					"services": types.SetValueMust(
-						ServiceObjectType,
-						[]attr.Value{
-							types.ObjectValueMust(
-								ServiceObjectType.AttrTypes,
-								map[string]attr.Value{
-									"id":          types.StringPointerValue(testGroup.Services[0].ID),
-									"name":        customTypes.StringPointerValue(testGroup.Services[0].TargetName),
-									"description": customTypes.StringPointerValue(testGroup.Services[0].Description),
-									"type":        customTypes.StringPointerValue(testGroup.Services[0].ServiceType),
-									"tier":        types.StringPointerValue(testGroup.Services[0].ServiceTier),
-									"owner":       types.StringPointerValue(testGroup.Services[0].OwnedBy.ID),
-									"links": types.SetValueMust(
-										ServiceLinkObjectType,
-										[]attr.Value{
-											types.ObjectValueMust(
-												ServiceLinkObjectType.AttrTypes,
-												map[string]attr.Value{
-													"link_text": customTypes.StringPointerValue(testGroup.Services[0].ServiceLinks[0].Label),
-													"url":       types.StringPointerValue(testGroup.Services[0].ServiceLinks[0].URL),
-												},
-											),
+					"group_type":          types.StringPointerValue(testGroup.GroupType),
+					"use_default_devices": types.BoolPointerValue(testGroup.UseDefaultDevices),
+					"criteria": types.ObjectValueMust(
+						GroupCriteriaObjectType.AttrTypes,
+						map[string]attr.Value{
+							"operand": types.StringPointerValue(testGroup.Criteria.Operand),
+							"criterion": types.SetValueMust(
+								GroupCriterionObjectType,
+								[]attr.Value{
+									types.ObjectValueMust(
+										GroupCriterionObjectType.AttrTypes,
+										map[string]attr.Value{
+											"criterion_type": types.StringPointerValue(testGroup.Criteria.Criterion[0].CriterionType),
+											"field":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Field),
+											"operand":        types.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
+											"value":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
 										},
 									),
 								},
 							),
 						},
 					),
-					"group_type": types.StringPointerValue(testGroup.GroupType),
 				},
 			),
 		},
@@ -580,6 +565,283 @@ func TestFlattenSiteObject(t *testing.T) {
 	for _, thisTest := range tests {
 		t.Run(thisTest.name, func(t *testing.T) {
 			got := FlattenSiteObject(thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenGroupCriteriaObject(t *testing.T) {
+	testCriteria := xmatters.SearchCriteria{
+		Operand: RandStringPointer(3),
+		Criterion: []*xmatters.SearchCriterion{
+			{
+				CriterionType: RandStringPointer(10),
+				Field:         RandStringPointer(10),
+				Operand:       RandStringPointer(5),
+				Value:         RandStringPointer(10),
+			},
+		},
+	}
+	type args struct {
+		diags *diag.Diagnostics
+		in    *xmatters.SearchCriteria
+	}
+	tests := []struct {
+		name string
+		args args
+		want basetypes.ObjectValue
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    nil,
+			},
+			want: types.ObjectNull(GroupCriteriaObjectType.AttrTypes),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    &testCriteria,
+			},
+			want: types.ObjectValueMust(
+				GroupCriteriaObjectType.AttrTypes,
+				map[string]attr.Value{
+					"operand": types.StringPointerValue(testCriteria.Operand),
+					"criterion": types.SetValueMust(
+						GroupCriterionObjectType,
+						[]attr.Value{
+							types.ObjectValueMust(
+								GroupCriterionObjectType.AttrTypes,
+								map[string]attr.Value{
+									"criterion_type": types.StringPointerValue(testCriteria.Criterion[0].CriterionType),
+									"field":          types.StringPointerValue(testCriteria.Criterion[0].Field),
+									"operand":        types.StringPointerValue(testCriteria.Criterion[0].Operand),
+									"value":          types.StringPointerValue(testCriteria.Criterion[0].Value),
+								},
+							),
+						},
+					),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenGroupCriteriaObject(thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenGroupCriterionObject(t *testing.T) {
+	testCriterion := xmatters.SearchCriterion{
+		CriterionType: RandStringPointer(10),
+		Field:         RandStringPointer(10),
+		Operand:       RandStringPointer(5),
+		Value:         RandStringPointer(10),
+	}
+	type args struct {
+		diags *diag.Diagnostics
+		in    *xmatters.SearchCriterion
+	}
+	tests := []struct {
+		name string
+		args args
+		want basetypes.ObjectValue
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    nil,
+			},
+			want: types.ObjectNull(GroupCriterionObjectType.AttrTypes),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    &testCriterion,
+			},
+			want: types.ObjectValueMust(
+				GroupCriterionObjectType.AttrTypes,
+				map[string]attr.Value{
+					"criterion_type": types.StringPointerValue(testCriterion.CriterionType),
+					"field":          types.StringPointerValue(testCriterion.Field),
+					"operand":        types.StringPointerValue(testCriterion.Operand),
+					"value":          types.StringPointerValue(testCriterion.Value),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenGroupCriterionObject(thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenTimeframeObject(t *testing.T) {
+	testTimeframe := xmatters.DeviceTimeframe{
+		Days:              []*string{RandStringPointer(3), RandStringPointer(3)},
+		DurationInMinutes: RandInt32Pointer(),
+		ExcludeHolidays:   RandBoolPointer(),
+		Name:              RandStringPointer(10),
+		StartTime:         RandStringPointer(8),
+	}
+	type args struct {
+		diags *diag.Diagnostics
+		in    *xmatters.DeviceTimeframe
+	}
+	tests := []struct {
+		name string
+		args args
+		want basetypes.ObjectValue
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    nil,
+			},
+			want: types.ObjectNull(TimeframeObjectType.AttrTypes),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    &testTimeframe,
+			},
+			want: types.ObjectValueMust(
+				TimeframeObjectType.AttrTypes,
+				map[string]attr.Value{
+					"days": types.SetValueMust(
+						customTypes.CustomStringType{},
+						[]attr.Value{
+							customTypes.StringPointerValue(testTimeframe.Days[0]),
+							customTypes.StringPointerValue(testTimeframe.Days[1]),
+						},
+					),
+					"duration_in_minutes": types.Int32PointerValue(testTimeframe.DurationInMinutes),
+					"exclude_holidays":    types.BoolPointerValue(testTimeframe.ExcludeHolidays),
+					"name":                customTypes.StringPointerValue(testTimeframe.Name),
+					"start_time":          types.StringPointerValue(testTimeframe.StartTime),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenTimeframeObject(thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenDeviceObject(t *testing.T) {
+	testDevice := xmatters.Device{
+		ID:                RandUUIDPointer(),
+		TargetName:        RandStringPointer(10),
+		Country:           RandStringPointer(2),
+		DefaultDevice:     RandBoolPointer(),
+		Delay:             RandInt32Pointer(),
+		DeviceType:        RandStringPointer(10),
+		EmailAddress:      RandStringPointer(20),
+		ExternalKey:       RandStringPointer(10),
+		ExternallyOwned:   RandBoolPointer(),
+		Name:              RandStringPointer(10),
+		Owner:             &xmatters.PersonReference{ID: RandUUIDPointer()},
+		PhoneNumber:       RandStringPointer(15),
+		PIN:               RandStringPointer(6),
+		PriorityThreshold: RandStringPointer(10),
+		Sequence:          RandInt32Pointer(),
+		Status:            RandStringPointer(10),
+		TestStatus:        RandStringPointer(10),
+		Timeframes: []*xmatters.DeviceTimeframe{
+			{
+				Days:              []*string{RandStringPointer(3)},
+				DurationInMinutes: RandInt32Pointer(),
+				ExcludeHolidays:   RandBoolPointer(),
+				Name:              RandStringPointer(10),
+				StartTime:         RandStringPointer(8),
+			},
+		},
+		TwoWayDevice: RandBoolPointer(),
+	}
+	type args struct {
+		diags *diag.Diagnostics
+		in    *xmatters.Device
+	}
+	tests := []struct {
+		name string
+		args args
+		want basetypes.ObjectValue
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    nil,
+			},
+			want: types.ObjectNull(DeviceObjectType.AttrTypes),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    &testDevice,
+			},
+			want: types.ObjectValueMust(
+				DeviceObjectType.AttrTypes,
+				map[string]attr.Value{
+					"id":                 types.StringPointerValue(testDevice.ID),
+					"target_name":        types.StringPointerValue(testDevice.TargetName),
+					"country":            types.StringPointerValue(testDevice.Country),
+					"default_device":     types.BoolPointerValue(testDevice.DefaultDevice),
+					"delay":              types.Int32PointerValue(testDevice.Delay),
+					"device_type":        types.StringPointerValue(testDevice.DeviceType),
+					"email_address":      types.StringPointerValue(testDevice.EmailAddress),
+					"external_key":       types.StringPointerValue(testDevice.ExternalKey),
+					"externally_owned":   types.BoolPointerValue(testDevice.ExternallyOwned),
+					"name":               types.StringPointerValue(testDevice.Name),
+					"owner":              types.StringPointerValue(testDevice.Owner.ID),
+					"phone_number":       types.StringPointerValue(testDevice.PhoneNumber),
+					"pin":                types.StringPointerValue(testDevice.PIN),
+					"priority_threshold": types.StringPointerValue(testDevice.PriorityThreshold),
+					"sequence":           types.Int32PointerValue(testDevice.Sequence),
+					"status":             types.StringPointerValue(testDevice.Status),
+					"test_status":        types.StringPointerValue(testDevice.TestStatus),
+					"timeframes": types.SetValueMust(
+						TimeframeObjectType,
+						[]attr.Value{
+							types.ObjectValueMust(
+								TimeframeObjectType.AttrTypes,
+								map[string]attr.Value{
+									"days": types.SetValueMust(
+										customTypes.CustomStringType{},
+										[]attr.Value{
+											customTypes.StringPointerValue(testDevice.Timeframes[0].Days[0]),
+										},
+									),
+									"duration_in_minutes": types.Int32PointerValue(testDevice.Timeframes[0].DurationInMinutes),
+									"exclude_holidays":    types.BoolPointerValue(testDevice.Timeframes[0].ExcludeHolidays),
+									"name":                customTypes.StringPointerValue(testDevice.Timeframes[0].Name),
+									"start_time":          types.StringPointerValue(testDevice.Timeframes[0].StartTime),
+								},
+							),
+						},
+					),
+					"two_way_device": types.BoolPointerValue(testDevice.TwoWayDevice),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenDeviceObject(thisTest.args.diags, thisTest.args.in)
 			assert.Equal(t, thisTest.want, got)
 		})
 	}
@@ -872,7 +1134,6 @@ func TestFlattenGroupList(t *testing.T) {
 			ExternalKey:     RandStringPointer(10),
 			ExternallyOwned: RandBoolPointer(),
 			AllowDuplicates: RandBoolPointer(),
-			Timezone:        RandStringPointer(10),
 			Site: &xmatters.ReferenceById{
 				ID: RandUUIDPointer(),
 			},
@@ -887,25 +1148,19 @@ func TestFlattenGroupList(t *testing.T) {
 					ID: RandUUIDPointer(),
 				},
 			},
-			Services: []*xmatters.Service{
-				{
-					ID:          RandUUIDPointer(),
-					TargetName:  RandStringPointer(10),
-					Description: RandStringPointer(10),
-					ServiceType: RandStringPointer(10),
-					ServiceTier: RandStringPointer(10),
-					OwnedBy: &xmatters.GroupReference{
-						ID: RandUUIDPointer(),
-					},
-					ServiceLinks: []*xmatters.ServiceLink{
-						{
-							Label: RandStringPointer(10),
-							URL:   RandStringPointer(10),
-						},
+			GroupType:         RandStringPointer(10),
+			UseDefaultDevices: RandBoolPointer(),
+			Criteria: &xmatters.SearchCriteria{
+				Operand: RandStringPointer(3),
+				Criterion: []*xmatters.SearchCriterion{
+					{
+						CriterionType: RandStringPointer(10),
+						Field:         RandStringPointer(10),
+						Operand:       RandStringPointer(5),
+						Value:         RandStringPointer(10),
 					},
 				},
 			},
-			GroupType: RandStringPointer(10),
 		},
 		{
 			ID:              RandUUIDPointer(),
@@ -915,7 +1170,6 @@ func TestFlattenGroupList(t *testing.T) {
 			ExternalKey:     RandStringPointer(10),
 			ExternallyOwned: RandBoolPointer(),
 			AllowDuplicates: RandBoolPointer(),
-			Timezone:        RandStringPointer(10),
 			Site: &xmatters.ReferenceById{
 				ID: RandUUIDPointer(),
 			},
@@ -930,25 +1184,19 @@ func TestFlattenGroupList(t *testing.T) {
 					ID: RandUUIDPointer(),
 				},
 			},
-			Services: []*xmatters.Service{
-				{
-					ID:          RandUUIDPointer(),
-					TargetName:  RandStringPointer(10),
-					Description: RandStringPointer(10),
-					ServiceType: RandStringPointer(10),
-					ServiceTier: RandStringPointer(10),
-					OwnedBy: &xmatters.GroupReference{
-						ID: RandUUIDPointer(),
-					},
-					ServiceLinks: []*xmatters.ServiceLink{
-						{
-							Label: RandStringPointer(10),
-							URL:   RandStringPointer(10),
-						},
+			GroupType:         RandStringPointer(10),
+			UseDefaultDevices: RandBoolPointer(),
+			Criteria: &xmatters.SearchCriteria{
+				Operand: RandStringPointer(3),
+				Criterion: []*xmatters.SearchCriterion{
+					{
+						CriterionType: RandStringPointer(10),
+						Field:         RandStringPointer(10),
+						Operand:       RandStringPointer(5),
+						Value:         RandStringPointer(10),
 					},
 				},
 			},
-			GroupType: RandStringPointer(10),
 		},
 	}
 	type args struct {
@@ -990,7 +1238,6 @@ func TestFlattenGroupList(t *testing.T) {
 							"external_key":     types.StringPointerValue(testGroups[0].ExternalKey),
 							"externally_owned": types.BoolPointerValue(testGroups[0].ExternallyOwned),
 							"allow_duplicates": types.BoolPointerValue(testGroups[0].AllowDuplicates),
-							"timezone":         types.StringPointerValue(testGroups[0].Timezone),
 							"site":             types.StringPointerValue(testGroups[0].Site.ID),
 							"observed_by_all":  types.BoolPointerValue(testGroups[0].ObservedByAll),
 							"observers": types.SetValueMust(
@@ -1005,35 +1252,28 @@ func TestFlattenGroupList(t *testing.T) {
 									types.StringPointerValue(testGroups[0].Supervisors[0].ID),
 								},
 							),
-							"services": types.SetValueMust(
-								ServiceObjectType,
-								[]attr.Value{
-									types.ObjectValueMust(
-										ServiceObjectType.AttrTypes,
-										map[string]attr.Value{
-											"id":          types.StringPointerValue(testGroups[0].Services[0].ID),
-											"name":        customTypes.StringPointerValue(testGroups[0].Services[0].TargetName),
-											"description": customTypes.StringPointerValue(testGroups[0].Services[0].Description),
-											"type":        customTypes.StringPointerValue(testGroups[0].Services[0].ServiceType),
-											"tier":        types.StringPointerValue(testGroups[0].Services[0].ServiceTier),
-											"owner":       types.StringPointerValue(testGroups[0].Services[0].OwnedBy.ID),
-											"links": types.SetValueMust(
-												ServiceLinkObjectType,
-												[]attr.Value{
-													types.ObjectValueMust(
-														ServiceLinkObjectType.AttrTypes,
-														map[string]attr.Value{
-															"link_text": customTypes.StringPointerValue(testGroups[0].Services[0].ServiceLinks[0].Label),
-															"url":       types.StringPointerValue(testGroups[0].Services[0].ServiceLinks[0].URL),
-														},
-													),
+							"group_type":          types.StringPointerValue(testGroups[0].GroupType),
+							"use_default_devices": types.BoolPointerValue(testGroups[0].UseDefaultDevices),
+							"criteria": types.ObjectValueMust(
+								GroupCriteriaObjectType.AttrTypes,
+								map[string]attr.Value{
+									"operand": types.StringPointerValue(testGroups[0].Criteria.Operand),
+									"criterion": types.SetValueMust(
+										GroupCriterionObjectType,
+										[]attr.Value{
+											types.ObjectValueMust(
+												GroupCriterionObjectType.AttrTypes,
+												map[string]attr.Value{
+													"criterion_type": types.StringPointerValue(testGroups[0].Criteria.Criterion[0].CriterionType),
+													"field":          types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Field),
+													"operand":        types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Operand),
+													"value":          types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Value),
 												},
 											),
 										},
 									),
 								},
 							),
-							"group_type": types.StringPointerValue(testGroups[0].GroupType),
 						},
 					),
 					types.ObjectValueMust(
@@ -1046,7 +1286,6 @@ func TestFlattenGroupList(t *testing.T) {
 							"external_key":     types.StringPointerValue(testGroups[1].ExternalKey),
 							"externally_owned": types.BoolPointerValue(testGroups[1].ExternallyOwned),
 							"allow_duplicates": types.BoolPointerValue(testGroups[1].AllowDuplicates),
-							"timezone":         types.StringPointerValue(testGroups[1].Timezone),
 							"site":             types.StringPointerValue(testGroups[1].Site.ID),
 							"observed_by_all":  types.BoolPointerValue(testGroups[1].ObservedByAll),
 							"observers": types.SetValueMust(
@@ -1061,35 +1300,28 @@ func TestFlattenGroupList(t *testing.T) {
 									types.StringPointerValue(testGroups[1].Supervisors[0].ID),
 								},
 							),
-							"services": types.SetValueMust(
-								ServiceObjectType,
-								[]attr.Value{
-									types.ObjectValueMust(
-										ServiceObjectType.AttrTypes,
-										map[string]attr.Value{
-											"id":          types.StringPointerValue(testGroups[1].Services[0].ID),
-											"name":        customTypes.StringPointerValue(testGroups[1].Services[0].TargetName),
-											"description": customTypes.StringPointerValue(testGroups[1].Services[0].Description),
-											"type":        customTypes.StringPointerValue(testGroups[1].Services[0].ServiceType),
-											"tier":        types.StringPointerValue(testGroups[1].Services[0].ServiceTier),
-											"owner":       types.StringPointerValue(testGroups[1].Services[0].OwnedBy.ID),
-											"links": types.SetValueMust(
-												ServiceLinkObjectType,
-												[]attr.Value{
-													types.ObjectValueMust(
-														ServiceLinkObjectType.AttrTypes,
-														map[string]attr.Value{
-															"link_text": customTypes.StringPointerValue(testGroups[1].Services[0].ServiceLinks[0].Label),
-															"url":       types.StringPointerValue(testGroups[1].Services[0].ServiceLinks[0].URL),
-														},
-													),
+							"group_type":          types.StringPointerValue(testGroups[1].GroupType),
+							"use_default_devices": types.BoolPointerValue(testGroups[1].UseDefaultDevices),
+							"criteria": types.ObjectValueMust(
+								GroupCriteriaObjectType.AttrTypes,
+								map[string]attr.Value{
+									"operand": types.StringPointerValue(testGroups[1].Criteria.Operand),
+									"criterion": types.SetValueMust(
+										GroupCriterionObjectType,
+										[]attr.Value{
+											types.ObjectValueMust(
+												GroupCriterionObjectType.AttrTypes,
+												map[string]attr.Value{
+													"criterion_type": types.StringPointerValue(testGroups[1].Criteria.Criterion[0].CriterionType),
+													"field":          types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Field),
+													"operand":        types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Operand),
+													"value":          types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Value),
 												},
 											),
 										},
 									),
 								},
 							),
-							"group_type": types.StringPointerValue(testGroups[1].GroupType),
 						},
 					),
 				},
@@ -1209,6 +1441,122 @@ func TestFlattenSiteList(t *testing.T) {
 	for _, thisTest := range tests {
 		t.Run(thisTest.name, func(t *testing.T) {
 			got := FlattenSiteList(thisTest.args.diags, thisTest.args.sites)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenDeviceList(t *testing.T) {
+	testDevices := []*xmatters.Device{
+		{
+			ID:                RandUUIDPointer(),
+			TargetName:        RandStringPointer(10),
+			Country:           RandStringPointer(2),
+			DefaultDevice:     RandBoolPointer(),
+			Delay:             RandInt32Pointer(),
+			DeviceType:        RandStringPointer(10),
+			EmailAddress:      RandStringPointer(20),
+			ExternalKey:       RandStringPointer(10),
+			ExternallyOwned:   RandBoolPointer(),
+			Name:              RandStringPointer(10),
+			Owner:             &xmatters.PersonReference{ID: RandUUIDPointer()},
+			PhoneNumber:       RandStringPointer(15),
+			PIN:               RandStringPointer(6),
+			PriorityThreshold: RandStringPointer(10),
+			Sequence:          RandInt32Pointer(),
+			Status:            RandStringPointer(10),
+			TestStatus:        RandStringPointer(10),
+			Timeframes: []*xmatters.DeviceTimeframe{
+				{
+					Days:              []*string{RandStringPointer(3)},
+					DurationInMinutes: RandInt32Pointer(),
+					ExcludeHolidays:   RandBoolPointer(),
+					Name:              RandStringPointer(10),
+					StartTime:         RandStringPointer(8),
+				},
+			},
+			TwoWayDevice: RandBoolPointer(),
+		},
+	}
+	type args struct {
+		diags   *diag.Diagnostics
+		devices []*xmatters.Device
+	}
+	tests := []struct {
+		name string
+		args args
+		want types.List
+	}{
+		{
+			name: "empty device list",
+			args: args{
+				diags:   &diag.Diagnostics{},
+				devices: []*xmatters.Device{},
+			},
+			want: types.ListValueMust(
+				DeviceObjectType,
+				[]attr.Value{},
+			),
+		},
+		{
+			name: "valid device list",
+			args: args{
+				diags:   &diag.Diagnostics{},
+				devices: testDevices,
+			},
+			want: types.ListValueMust(
+				DeviceObjectType,
+				[]attr.Value{
+					types.ObjectValueMust(
+						DeviceObjectType.AttrTypes,
+						map[string]attr.Value{
+							"id":                 types.StringPointerValue(testDevices[0].ID),
+							"target_name":        types.StringPointerValue(testDevices[0].TargetName),
+							"country":            types.StringPointerValue(testDevices[0].Country),
+							"default_device":     types.BoolPointerValue(testDevices[0].DefaultDevice),
+							"delay":              types.Int32PointerValue(testDevices[0].Delay),
+							"device_type":        types.StringPointerValue(testDevices[0].DeviceType),
+							"email_address":      types.StringPointerValue(testDevices[0].EmailAddress),
+							"external_key":       types.StringPointerValue(testDevices[0].ExternalKey),
+							"externally_owned":   types.BoolPointerValue(testDevices[0].ExternallyOwned),
+							"name":               types.StringPointerValue(testDevices[0].Name),
+							"owner":              types.StringPointerValue(testDevices[0].Owner.ID),
+							"phone_number":       types.StringPointerValue(testDevices[0].PhoneNumber),
+							"pin":                types.StringPointerValue(testDevices[0].PIN),
+							"priority_threshold": types.StringPointerValue(testDevices[0].PriorityThreshold),
+							"sequence":           types.Int32PointerValue(testDevices[0].Sequence),
+							"status":             types.StringPointerValue(testDevices[0].Status),
+							"test_status":        types.StringPointerValue(testDevices[0].TestStatus),
+							"timeframes": types.SetValueMust(
+								TimeframeObjectType,
+								[]attr.Value{
+									types.ObjectValueMust(
+										TimeframeObjectType.AttrTypes,
+										map[string]attr.Value{
+											"days": types.SetValueMust(
+												customTypes.CustomStringType{},
+												[]attr.Value{
+													customTypes.StringPointerValue(testDevices[0].Timeframes[0].Days[0]),
+												},
+											),
+											"duration_in_minutes": types.Int32PointerValue(testDevices[0].Timeframes[0].DurationInMinutes),
+											"exclude_holidays":    types.BoolPointerValue(testDevices[0].Timeframes[0].ExcludeHolidays),
+											"name":                customTypes.StringPointerValue(testDevices[0].Timeframes[0].Name),
+											"start_time":          types.StringPointerValue(testDevices[0].Timeframes[0].StartTime),
+										},
+									),
+								},
+							),
+							"two_way_device": types.BoolPointerValue(testDevices[0].TwoWayDevice),
+						},
+					),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenDeviceList(thisTest.args.diags, thisTest.args.devices)
 			assert.Equal(t, thisTest.want, got)
 		})
 	}
@@ -1652,9 +2000,168 @@ func TestFlattenGroupMemberSet(t *testing.T) {
 	}
 }
 
-// ------------------------------------------------------------
-// Map Flatteners
-// ------------------------------------------------------------
+func TestFlattenTimeframeSet(t *testing.T) {
+	testTimeframes := []*xmatters.DeviceTimeframe{
+		{
+			Days:              []*string{RandStringPointer(3), RandStringPointer(3)},
+			DurationInMinutes: RandInt32Pointer(),
+			ExcludeHolidays:   RandBoolPointer(),
+			Name:              RandStringPointer(10),
+			StartTime:         RandStringPointer(8),
+		},
+		{
+			Days:              []*string{RandStringPointer(3)},
+			DurationInMinutes: RandInt32Pointer(),
+			ExcludeHolidays:   RandBoolPointer(),
+			Name:              RandStringPointer(10),
+			StartTime:         RandStringPointer(8),
+		},
+	}
+	type args struct {
+		diags      *diag.Diagnostics
+		timeframes []*xmatters.DeviceTimeframe
+	}
+	tests := []struct {
+		name string
+		args args
+		want types.Set
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags:      &diag.Diagnostics{},
+				timeframes: nil,
+			},
+			want: types.SetValueMust(
+				TimeframeObjectType,
+				[]attr.Value{},
+			),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags:      &diag.Diagnostics{},
+				timeframes: testTimeframes,
+			},
+			want: types.SetValueMust(
+				TimeframeObjectType,
+				[]attr.Value{
+					types.ObjectValueMust(
+						TimeframeObjectType.AttrTypes,
+						map[string]attr.Value{
+							"days": types.SetValueMust(
+								customTypes.CustomStringType{},
+								[]attr.Value{
+									customTypes.StringPointerValue(testTimeframes[0].Days[0]),
+									customTypes.StringPointerValue(testTimeframes[0].Days[1]),
+								},
+							),
+							"duration_in_minutes": types.Int32PointerValue(testTimeframes[0].DurationInMinutes),
+							"exclude_holidays":    types.BoolPointerValue(testTimeframes[0].ExcludeHolidays),
+							"name":                customTypes.StringPointerValue(testTimeframes[0].Name),
+							"start_time":          types.StringPointerValue(testTimeframes[0].StartTime),
+						},
+					),
+					types.ObjectValueMust(
+						TimeframeObjectType.AttrTypes,
+						map[string]attr.Value{
+							"days": types.SetValueMust(
+								customTypes.CustomStringType{},
+								[]attr.Value{
+									customTypes.StringPointerValue(testTimeframes[1].Days[0]),
+								},
+							),
+							"duration_in_minutes": types.Int32PointerValue(testTimeframes[1].DurationInMinutes),
+							"exclude_holidays":    types.BoolPointerValue(testTimeframes[1].ExcludeHolidays),
+							"name":                customTypes.StringPointerValue(testTimeframes[1].Name),
+							"start_time":          types.StringPointerValue(testTimeframes[1].StartTime),
+						},
+					),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenTimeframeSet(thisTest.args.diags, thisTest.args.timeframes)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestFlattenGroupCriterionSet(t *testing.T) {
+	testCriterion := []*xmatters.SearchCriterion{
+		{
+			CriterionType: RandStringPointer(10),
+			Field:         RandStringPointer(10),
+			Operand:       RandStringPointer(5),
+			Value:         RandStringPointer(10),
+		},
+		{
+			CriterionType: RandStringPointer(10),
+			Field:         RandStringPointer(10),
+			Operand:       RandStringPointer(5),
+			Value:         RandStringPointer(10),
+		},
+	}
+	type args struct {
+		diags *diag.Diagnostics
+		in    []*xmatters.SearchCriterion
+	}
+	tests := []struct {
+		name string
+		args args
+		want types.Set
+	}{
+		{
+			name: "nil params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    nil,
+			},
+			want: types.SetValueMust(
+				GroupCriterionObjectType,
+				[]attr.Value{},
+			),
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in:    testCriterion,
+			},
+			want: types.SetValueMust(
+				GroupCriterionObjectType,
+				[]attr.Value{
+					types.ObjectValueMust(
+						GroupCriterionObjectType.AttrTypes,
+						map[string]attr.Value{
+							"criterion_type": types.StringPointerValue(testCriterion[0].CriterionType),
+							"field":          types.StringPointerValue(testCriterion[0].Field),
+							"operand":        types.StringPointerValue(testCriterion[0].Operand),
+							"value":          types.StringPointerValue(testCriterion[0].Value),
+						},
+					),
+					types.ObjectValueMust(
+						GroupCriterionObjectType.AttrTypes,
+						map[string]attr.Value{
+							"criterion_type": types.StringPointerValue(testCriterion[1].CriterionType),
+							"field":          types.StringPointerValue(testCriterion[1].Field),
+							"operand":        types.StringPointerValue(testCriterion[1].Operand),
+							"value":          types.StringPointerValue(testCriterion[1].Value),
+						},
+					),
+				},
+			),
+		},
+	}
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := FlattenGroupCriterionSet(thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
 
 // ------------------------------------------------------------
 // Primitive Flatteners

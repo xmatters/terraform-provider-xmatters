@@ -61,20 +61,20 @@ var (
 	// Define the group object type.
 	GroupObjectType = types.ObjectType{
 		AttrTypes: map[string]attr.Type{
-			"id":               types.StringType,
-			"name":             types.StringType,
-			"description":      types.StringType,
-			"status":           types.StringType,
-			"external_key":     types.StringType,
-			"externally_owned": types.BoolType,
-			"allow_duplicates": types.BoolType,
-			"timezone":         types.StringType,
-			"site":             types.StringType,
-			"observed_by_all":  types.BoolType,
-			"observers":        types.SetType{ElemType: customTypes.CustomStringType{}},
-			"supervisors":      types.SetType{ElemType: types.StringType},
-			"services":         types.SetType{ElemType: ServiceObjectType},
-			"group_type":       types.StringType,
+			"id":                  types.StringType,
+			"name":                types.StringType,
+			"description":         types.StringType,
+			"status":              types.StringType,
+			"external_key":        types.StringType,
+			"externally_owned":    types.BoolType,
+			"allow_duplicates":    types.BoolType,
+			"site":                types.StringType,
+			"observed_by_all":     types.BoolType,
+			"observers":           types.SetType{ElemType: customTypes.CustomStringType{}},
+			"supervisors":         types.SetType{ElemType: types.StringType},
+			"group_type":          types.StringType,
+			"use_default_devices": types.BoolType,
+			"criteria":            GroupCriteriaObjectType,
 		},
 	}
 
@@ -93,6 +93,24 @@ var (
 			"name":           types.StringType,
 			"recipient_type": types.StringType,
 			"group_type":     types.StringType,
+		},
+	}
+
+	// Define the group criteria object type.
+	GroupCriteriaObjectType = types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"operand":   types.StringType,
+			"criterion": types.SetType{ElemType: GroupCriterionObjectType},
+		},
+	}
+
+	// Define the group criterion object type.
+	GroupCriterionObjectType = types.ObjectType{
+		AttrTypes: map[string]attr.Type{
+			"criterion_type": types.StringType,
+			"field":          types.StringType,
+			"operand":        types.StringType,
+			"value":          types.StringType,
 		},
 	}
 
@@ -250,20 +268,20 @@ func FlattenGroupObject(diags *diag.Diagnostics, in *xmatters.Group) basetypes.O
 	}
 	objReturn, d := types.ObjectValue(GroupObjectType.AttrTypes,
 		map[string]attr.Value{
-			"id":               types.StringPointerValue(in.ID),
-			"name":             types.StringPointerValue(in.TargetName),
-			"description":      types.StringPointerValue(in.Description),
-			"status":           types.StringPointerValue(in.Status),
-			"external_key":     types.StringPointerValue(in.ExternalKey),
-			"externally_owned": types.BoolPointerValue(in.ExternallyOwned),
-			"allow_duplicates": types.BoolPointerValue(in.AllowDuplicates),
-			"timezone":         types.StringPointerValue(in.Timezone),
-			"site":             FlattenReferenceID(in.Site),
-			"observed_by_all":  types.BoolPointerValue(in.ObservedByAll),
-			"observers":        FlattenReferenceNameSet(diags, in.Observers),
-			"supervisors":      FlattenReferenceIDSet(diags, in.Supervisors),
-			"services":         FlattenServiceSet(diags, in.Services),
-			"group_type":       types.StringPointerValue(in.GroupType),
+			"id":                  types.StringPointerValue(in.ID),
+			"name":                types.StringPointerValue(in.TargetName),
+			"description":         types.StringPointerValue(in.Description),
+			"status":              types.StringPointerValue(in.Status),
+			"external_key":        types.StringPointerValue(in.ExternalKey),
+			"externally_owned":    types.BoolPointerValue(in.ExternallyOwned),
+			"allow_duplicates":    types.BoolPointerValue(in.AllowDuplicates),
+			"site":                FlattenReferenceID(in.Site),
+			"observed_by_all":     types.BoolPointerValue(in.ObservedByAll),
+			"observers":           FlattenReferenceNameSet(diags, in.Observers),
+			"supervisors":         FlattenReferenceIDSet(diags, in.Supervisors),
+			"group_type":          types.StringPointerValue(in.GroupType),
+			"use_default_devices": types.BoolPointerValue(in.UseDefaultDevices),
+			"criteria":            FlattenGroupCriteriaObject(diags, in.Criteria),
 		},
 	)
 	if diags.Append(d...); d.HasError() {
@@ -291,6 +309,7 @@ func FlattenGroupMemberObject(diags *diag.Diagnostics, in *xmatters.GroupMember)
 }
 
 // FlattenGroupReferenceObject returns a new `basetypes.ObjectValue` from the provided `xmatters.GroupReference` object.
+// If the provided object is nil, a null object with appropriate attribute types is returned.
 func FlattenGroupReferenceObject(diags *diag.Diagnostics, in *xmatters.GroupReference) basetypes.ObjectValue {
 	if in == nil {
 		return types.ObjectNull(GroupReferenceObjectType.AttrTypes)
@@ -305,6 +324,44 @@ func FlattenGroupReferenceObject(diags *diag.Diagnostics, in *xmatters.GroupRefe
 	)
 	if diags.Append(d...); d.HasError() {
 		return types.ObjectNull(GroupReferenceObjectType.AttrTypes)
+	}
+	return objReturn
+}
+
+// FlattenGroupCriteriaObject returns a new `basetypes.ObjectValue` from the provided `xmatters.SearchCriteria` object.
+// If the provided object is nil, a null object with appropriate attribute types is returned.
+func FlattenGroupCriteriaObject(diags *diag.Diagnostics, in *xmatters.SearchCriteria) basetypes.ObjectValue {
+	if in == nil {
+		return types.ObjectNull(GroupCriteriaObjectType.AttrTypes)
+	}
+	objReturn, d := types.ObjectValue(GroupCriteriaObjectType.AttrTypes,
+		map[string]attr.Value{
+			"operand":   types.StringPointerValue(in.Operand),
+			"criterion": FlattenGroupCriterionSet(diags, in.Criterion),
+		},
+	)
+	if diags.Append(d...); d.HasError() {
+		return types.ObjectNull(GroupCriteriaObjectType.AttrTypes)
+	}
+	return objReturn
+}
+
+// FlattenGroupCriterionObject returns a new `basetypes.ObjectValue` from the provided `xmatters.SearchCriterion` object.
+// If the provided object is nil, a null object with appropriate attribute types is returned.
+func FlattenGroupCriterionObject(diags *diag.Diagnostics, in *xmatters.SearchCriterion) basetypes.ObjectValue {
+	if in == nil {
+		return types.ObjectNull(GroupCriterionObjectType.AttrTypes)
+	}
+	objReturn, d := types.ObjectValue(GroupCriterionObjectType.AttrTypes,
+		map[string]attr.Value{
+			"criterion_type": types.StringPointerValue(in.CriterionType),
+			"field":          types.StringPointerValue(in.Field),
+			"operand":        types.StringPointerValue(in.Operand),
+			"value":          types.StringPointerValue(in.Value),
+		},
+	)
+	if diags.Append(d...); d.HasError() {
+		return types.ObjectNull(GroupCriterionObjectType.AttrTypes)
 	}
 	return objReturn
 }
@@ -439,6 +496,32 @@ func FlattenDeviceObject(diags *diag.Diagnostics, in *xmatters.Device) basetypes
 		return types.ObjectNull(DeviceObjectType.AttrTypes)
 	}
 	return objReturn
+}
+
+// ExpandGroupCriteriaObject transforms a Terraform ObjectValue into an xMatters SearchCriteria object.
+// If the provided object is nil, a nil SearchCriteria object is returned.
+func ExpandGroupCriteriaObject(diags *diag.Diagnostics, in basetypes.ObjectValue) *xmatters.SearchCriteria {
+	if in.IsNull() || in.IsUnknown() {
+		return nil
+	}
+	// Get the attributes from the object
+	attrs := in.Attributes()
+	// Extract operand
+	operandAttr, ok := attrs["operand"]
+	if !ok {
+		return nil
+	}
+	operand := operandAttr.(basetypes.StringValue).ValueStringPointer()
+	// Extract criterion set
+	criterionAttr, ok := attrs["criterion"]
+	if !ok {
+		return nil
+	}
+	criterion := ExpandGroupCriterionSet(diags, criterionAttr.(basetypes.SetValue))
+	return &xmatters.SearchCriteria{
+		Operand:   operand,
+		Criterion: criterion,
+	}
 }
 
 // ------------------------------------------------------------
@@ -756,6 +839,20 @@ func FlattenGroupMemberSet(diags *diag.Diagnostics, in []*xmatters.GroupMember) 
 	return groupMemberSet
 }
 
+// FlattenGroupCriterionSet transforms a slice of xMatters SearchCriterion objects into a Terraform Set.
+// If the provided object is nil, a null set with appropriate element types is returned.
+func FlattenGroupCriterionSet(diags *diag.Diagnostics, in []*xmatters.SearchCriterion) types.Set {
+	elems := make([]attr.Value, 0, len(in))
+	for _, c := range in {
+		elems = append(elems, FlattenGroupCriterionObject(diags, c))
+	}
+	set, d := types.SetValue(GroupCriterionObjectType, elems)
+	if diags.Append(d...); d.HasError() {
+		return types.SetNull(GroupCriterionObjectType)
+	}
+	return set
+}
+
 // ------------------------------------------------------------
 // Set Expanders
 // ------------------------------------------------------------
@@ -844,6 +941,19 @@ func ExpandGroupMemberSet(diags *diag.Diagnostics, in basetypes.SetValue) []*xma
 		return nil
 	}
 	return members
+}
+
+// ExpandGroupCriterionSet transforms a Terraform Set into a slice of xMatters SearchCriterion objects.
+// If the provided set is null or unknown, a nil slice is returned.
+func ExpandGroupCriterionSet(diags *diag.Diagnostics, in basetypes.SetValue) []*xmatters.SearchCriterion {
+	if in.IsNull() || in.IsUnknown() {
+		return nil
+	}
+	var criteria []*xmatters.SearchCriterion
+	if diags.Append(in.ElementsAs(context.TODO(), &criteria, false)...); diags.HasError() {
+		return nil
+	}
+	return criteria
 }
 
 // ------------------------------------------------------------

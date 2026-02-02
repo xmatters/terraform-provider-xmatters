@@ -102,9 +102,58 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Optional:            true,
 				MarkdownDescription: describe.GroupResourceExternallyOwned,
 			},
+			"criteria": schema.SingleNestedAttribute{
+				Computed:   true,
+				Optional:   true,
+				Attributes: GroupCriteriaSchema(),
+				Validators: []validator.Object{
+					utils.GroupTypeValidator{
+						RequiredValue: "DYNAMIC",
+					},
+				},
+			},
 			"last_updated": schema.StringAttribute{
 				Computed: true,
 			},
+		},
+	}
+}
+
+// GroupCriteriaSchema is a helper function to simplify the GroupResource Schema implementation.
+func GroupCriteriaSchema() map[string]schema.Attribute {
+	return map[string]schema.Attribute{
+		"operand": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupResourceCriteriaOperand,
+		},
+		"criterion": schema.ListNestedAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriteriaCriterion,
+			NestedObject: schema.NestedAttributeObject{
+				Attributes: GroupCriterionSchema(),
+			},
+		},
+	}
+}
+
+// GroupCriterionSchema is a helper function to simplify the GroupCriteriaSchema Schema implementation.
+func GroupCriterionSchema() map[string]schema.Attribute {
+	return map[string]schema.Attribute{
+		"criterion_type": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionType,
+		},
+		"field": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionField,
+		},
+		"operand": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionOperand,
+		},
+		"value": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionValue,
 		},
 	}
 }

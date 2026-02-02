@@ -7,13 +7,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/xmatters/terraform-provider-xmatters/internal/resources/groupRoster"
+	"github.com/xmatters/terraform-provider-xmatters/internal/resources/groupMembers"
 	"github.com/xmatters/terraform-provider-xmatters/internal/utils"
 	"github.com/xmatters/xmatters-go"
 )
 
-func TestResourceGroupRosterToModel(t *testing.T) {
-	testRoster := xmatters.GroupRoster{
+func TestResourceGroupMembersToModel(t *testing.T) {
+	testRoster := xmatters.GroupMembers{
 		ID: utils.RandUUIDPointer(),
 		Group: &xmatters.GroupReference{
 			ID:            utils.RandUUIDPointer(),
@@ -38,21 +38,21 @@ func TestResourceGroupRosterToModel(t *testing.T) {
 	}
 	type args struct {
 		diags *diag.Diagnostics
-		in    xmatters.GroupRoster
+		in    xmatters.GroupMembers
 	}
 
 	tests := []struct {
 		name     string
 		args     args
-		expected groupRoster.GroupRosterModel
+		expected groupMembers.GroupMembersModel
 	}{
 		{
 			name: "empty roster",
 			args: args{
 				diags: &diag.Diagnostics{},
-				in:    xmatters.GroupRoster{},
+				in:    xmatters.GroupMembers{},
 			},
-			expected: groupRoster.GroupRosterModel{
+			expected: groupMembers.GroupMembersModel{
 				Group: types.ObjectNull(
 					utils.GroupReferenceObjectType.AttrTypes,
 				),
@@ -68,7 +68,7 @@ func TestResourceGroupRosterToModel(t *testing.T) {
 				diags: &diag.Diagnostics{},
 				in:    testRoster,
 			},
-			expected: groupRoster.GroupRosterModel{
+			expected: groupMembers.GroupMembersModel{
 				ID: types.StringPointerValue(testRoster.ID),
 				Group: types.ObjectValueMust(
 					utils.GroupReferenceObjectType.AttrTypes,
@@ -111,7 +111,7 @@ func TestResourceGroupRosterToModel(t *testing.T) {
 
 	for _, thisTest := range tests {
 		t.Run(thisTest.name, func(t *testing.T) {
-			actual := groupRoster.GroupRosterToModel(thisTest.args.diags, thisTest.args.in)
+			actual := groupMembers.GroupMembersToModel(thisTest.args.diags, thisTest.args.in)
 			assert.Equal(t, thisTest.expected, actual)
 		})
 	}

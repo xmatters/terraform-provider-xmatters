@@ -1,19 +1,5 @@
 # Changelog
 
-## [0.3.0] - 2025-09-11
-
-ENHANCEMENTS:
-
-- Added group support:
-  - `xmatters_group` resource.
-  - `xmatters_group` and `xmatters_groups` data sources.
-  - `xmatters_group_roster` resource for managing group membership.
-- Added documentation and example Terraform configs for group, group roster, and groups data source.
-
-CHANGES:
-
-- Improved example values and documentation for all group-related resources and data sources.
-
 ## [0.2.0] - 2025-09-09
 
 ENHANCEMENTS:

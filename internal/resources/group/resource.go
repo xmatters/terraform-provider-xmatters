@@ -202,7 +202,7 @@ func (r *GroupResource) ImportState(ctx context.Context, req resource.ImportStat
 func GroupToModel(diags *diag.Diagnostics, group xmatters.Group) GroupModel {
 	model := GroupModel{
 		ID:                types.StringPointerValue(group.ID),
-		TargetName:        customTypes.StringPointerValue(group.TargetName),
+		Name:              customTypes.StringPointerValue(group.TargetName),
 		Status:            types.StringPointerValue(group.Status),
 		Description:       customTypes.StringPointerValue(group.Description),
 		GroupType:         types.StringPointerValue(group.GroupType),
@@ -214,6 +214,7 @@ func GroupToModel(diags *diag.Diagnostics, group xmatters.Group) GroupModel {
 		Supervisors:       utils.FlattenReferenceIDSet(diags, group.Supervisors),
 		ExternalKey:       customTypes.StringPointerValue(group.ExternalKey),
 		ExternallyOwned:   types.BoolPointerValue(group.ExternallyOwned),
+		Criteria:          utils.FlattenGroupCriteriaObject(diags, group.Criteria),
 	}
 	if diags.HasError() {
 		return GroupModel{}

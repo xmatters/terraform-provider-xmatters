@@ -438,6 +438,101 @@ func TestExpandStringSliceSet(t *testing.T) {
 	}
 }
 
+func TestExpandTimeframeSet(t *testing.T) {
+	testTimeframes := []*xmatters.DeviceTimeframe{
+		{
+			Days:              []*string{RandStringPointer(3), RandStringPointer(3)},
+			DurationInMinutes: helpers.Int32Pointer(60),
+			ExcludeHolidays:   RandBoolPointer(),
+			Name:              RandStringPointer(5),
+			StartTime:         RandStringPointer(5),
+		},
+		{
+			Days:              []*string{RandStringPointer(3)},
+			DurationInMinutes: helpers.Int32Pointer(120),
+			ExcludeHolidays:   RandBoolPointer(),
+			Name:              RandStringPointer(5),
+			StartTime:         RandStringPointer(5),
+		},
+	}
+	type args struct {
+		diags diag.Diagnostics
+		in    basetypes.SetValue
+	}
+	tests := []struct {
+		name string
+		args args
+		want []*xmatters.DeviceTimeframe
+	}{
+		{
+			name: "empty",
+			args: args{
+				diags: diag.Diagnostics{},
+				in:    types.SetNull(TimeframeObjectType),
+			},
+			want: nil,
+		},
+		{
+			name: "invalid item",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(types.Int32Type, []attr.Value{
+					types.Int32Value(5),
+				}),
+			},
+			want: nil,
+		},
+		{
+			name: "single item",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(TimeframeObjectType, []attr.Value{
+					types.ObjectValueMust(TimeframeObjectType.AttrTypes, map[string]attr.Value{
+						"days":                types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{customTypes.StringValue(*testTimeframes[0].Days[0]), customTypes.StringValue(*testTimeframes[0].Days[1])}),
+						"duration_in_minutes": types.Int32PointerValue(testTimeframes[0].DurationInMinutes),
+						"exclude_holidays":    types.BoolPointerValue(testTimeframes[0].ExcludeHolidays),
+						"name":                customTypes.StringPointerValue(testTimeframes[0].Name),
+						"start_time":          types.StringPointerValue(testTimeframes[0].StartTime),
+					}),
+				}),
+			},
+			want: []*xmatters.DeviceTimeframe{
+				testTimeframes[0],
+			},
+		},
+		{
+			name: "multiple items",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(TimeframeObjectType, []attr.Value{
+					types.ObjectValueMust(TimeframeObjectType.AttrTypes, map[string]attr.Value{
+						"days":                types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{customTypes.StringValue(*testTimeframes[0].Days[0]), customTypes.StringValue(*testTimeframes[0].Days[1])}),
+						"duration_in_minutes": types.Int32PointerValue(testTimeframes[0].DurationInMinutes),
+						"exclude_holidays":    types.BoolPointerValue(testTimeframes[0].ExcludeHolidays),
+						"name":                customTypes.StringPointerValue(testTimeframes[0].Name),
+						"start_time":          types.StringPointerValue(testTimeframes[0].StartTime),
+					}),
+					types.ObjectValueMust(TimeframeObjectType.AttrTypes, map[string]attr.Value{
+						"days":                types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{customTypes.StringValue(*testTimeframes[1].Days[0])}),
+						"duration_in_minutes": types.Int32PointerValue(testTimeframes[1].DurationInMinutes),
+						"exclude_holidays":    types.BoolPointerValue(testTimeframes[1].ExcludeHolidays),
+						"name":                customTypes.StringPointerValue(testTimeframes[1].Name),
+						"start_time":          types.StringPointerValue(testTimeframes[1].StartTime),
+					}),
+				}),
+			},
+			want: testTimeframes,
+		},
+	}
+
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := ExpandTimeframeSet(&thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
 func TestExpandReferenceNameSet(t *testing.T) {
 	testRefNames := []*xmatters.ReferenceByName{
 		{
@@ -669,6 +764,96 @@ func TestExpandGroupMemberSet(t *testing.T) {
 	}
 }
 
+func TestExpandGroupCriterionSet(t *testing.T) {
+	testCriteria := []*xmatters.SearchCriterion{
+		{
+			CriterionType: RandStringPointer(5),
+			Field:         RandStringPointer(5),
+			Operand:       RandStringPointer(3),
+			Value:         RandStringPointer(5),
+		},
+		{
+			CriterionType: RandStringPointer(5),
+			Field:         RandStringPointer(5),
+			Operand:       RandStringPointer(3),
+			Value:         RandStringPointer(5),
+		},
+	}
+	type args struct {
+		diags diag.Diagnostics
+		in    basetypes.SetValue
+	}
+	tests := []struct {
+		name string
+		args args
+		want []*xmatters.SearchCriterion
+	}{
+		{
+			name: "empty",
+			args: args{
+				diags: diag.Diagnostics{},
+				in:    types.SetNull(GroupCriterionObjectType),
+			},
+			want: nil,
+		},
+		{
+			name: "invalid item",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(types.Int32Type, []attr.Value{
+					types.Int32Value(5),
+				}),
+			},
+			want: nil,
+		},
+		{
+			name: "single item",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(GroupCriterionObjectType, []attr.Value{
+					types.ObjectValueMust(GroupCriterionObjectType.AttrTypes, map[string]attr.Value{
+						"criterion_type": types.StringPointerValue(testCriteria[0].CriterionType),
+						"field":          types.StringPointerValue(testCriteria[0].Field),
+						"operand":        types.StringPointerValue(testCriteria[0].Operand),
+						"value":          types.StringPointerValue(testCriteria[0].Value),
+					}),
+				}),
+			},
+			want: []*xmatters.SearchCriterion{
+				testCriteria[0],
+			},
+		},
+		{
+			name: "multiple items",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.SetValueMust(GroupCriterionObjectType, []attr.Value{
+					types.ObjectValueMust(GroupCriterionObjectType.AttrTypes, map[string]attr.Value{
+						"criterion_type": types.StringPointerValue(testCriteria[0].CriterionType),
+						"field":          types.StringPointerValue(testCriteria[0].Field),
+						"operand":        types.StringPointerValue(testCriteria[0].Operand),
+						"value":          types.StringPointerValue(testCriteria[0].Value),
+					}),
+					types.ObjectValueMust(GroupCriterionObjectType.AttrTypes, map[string]attr.Value{
+						"criterion_type": types.StringPointerValue(testCriteria[1].CriterionType),
+						"field":          types.StringPointerValue(testCriteria[1].Field),
+						"operand":        types.StringPointerValue(testCriteria[1].Operand),
+						"value":          types.StringPointerValue(testCriteria[1].Value),
+					}),
+				}),
+			},
+			want: testCriteria,
+		},
+	}
+
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := ExpandGroupCriterionSet(&thisTest.args.diags, thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
 // ------------------------------------------------------------
 // Primitive Expanders
 // ------------------------------------------------------------
@@ -710,6 +895,71 @@ func TestExpandGroupReference(t *testing.T) {
 	for _, thisTest := range tests {
 		t.Run(thisTest.name, func(t *testing.T) {
 			got := ExpandGroupReferenceId(thisTest.args.in)
+			assert.Equal(t, thisTest.want, got)
+		})
+	}
+}
+
+func TestExpandGroupCriteriaObject(t *testing.T) {
+	testCriteria := &xmatters.SearchCriteria{
+		Operand: RandStringPointer(3),
+		Criterion: []*xmatters.SearchCriterion{
+			{
+				CriterionType: RandStringPointer(5),
+				Field:         RandStringPointer(5),
+				Operand:       RandStringPointer(3),
+				Value:         RandStringPointer(5),
+			},
+		},
+	}
+	type args struct {
+		diags diag.Diagnostics
+		in    basetypes.ObjectValue
+	}
+	tests := []struct {
+		name string
+		args args
+		want *xmatters.SearchCriteria
+	}{
+		{
+			name: "null params",
+			args: args{
+				diags: diag.Diagnostics{},
+				in:    types.ObjectNull(GroupCriteriaObjectType.AttrTypes),
+			},
+			want: nil,
+		},
+		{
+			name: "unknown params",
+			args: args{
+				diags: diag.Diagnostics{},
+				in:    types.ObjectUnknown(GroupCriteriaObjectType.AttrTypes),
+			},
+			want: nil,
+		},
+		{
+			name: "valid params",
+			args: args{
+				diags: diag.Diagnostics{},
+				in: types.ObjectValueMust(GroupCriteriaObjectType.AttrTypes, map[string]attr.Value{
+					"operand": types.StringPointerValue(testCriteria.Operand),
+					"criterion": types.SetValueMust(GroupCriterionObjectType, []attr.Value{
+						types.ObjectValueMust(GroupCriterionObjectType.AttrTypes, map[string]attr.Value{
+							"criterion_type": types.StringPointerValue(testCriteria.Criterion[0].CriterionType),
+							"field":          types.StringPointerValue(testCriteria.Criterion[0].Field),
+							"operand":        types.StringPointerValue(testCriteria.Criterion[0].Operand),
+							"value":          types.StringPointerValue(testCriteria.Criterion[0].Value),
+						}),
+					}),
+				}),
+			},
+			want: testCriteria,
+		},
+	}
+
+	for _, thisTest := range tests {
+		t.Run(thisTest.name, func(t *testing.T) {
+			got := ExpandGroupCriteriaObject(&thisTest.args.diags, thisTest.args.in)
 			assert.Equal(t, thisTest.want, got)
 		})
 	}

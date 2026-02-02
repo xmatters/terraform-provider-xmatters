@@ -5,7 +5,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/xmatters/terraform-provider-xmatters/internal/describe"
+	"github.com/xmatters/terraform-provider-xmatters/internal/utils/customTypes"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
@@ -35,6 +37,86 @@ func GroupDataSourceSchema() map[string]schema.Attribute {
 			Computed:            true,
 			MarkdownDescription: describe.GroupDescription,
 		},
-		// ...existing code...
+		"status": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupStatus,
+		},
+		"external_key": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupExternalKey,
+		},
+		"externally_owned": schema.BoolAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupExternallyOwned,
+		},
+		"allow_duplicates": schema.BoolAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupAllowDuplicates,
+		},
+		"site": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupSite,
+		},
+		"observed_by_all": schema.BoolAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupObservedByAll,
+		},
+		"observers": schema.SetAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupObservers,
+			ElementType:         customTypes.CustomStringType{},
+		},
+		"supervisors": schema.SetAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupSupervisors,
+			ElementType:         types.StringType,
+		},
+		"group_type": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupType,
+		},
+		"criteria": schema.SingleNestedAttribute{
+			Computed:   true,
+			Attributes: GroupCriteriaSchema(),
+		},
+	}
+}
+
+// GroupCriteriaSchema is a helper function to simplify the GroupDataSource Schema implementation.
+func GroupCriteriaSchema() map[string]schema.Attribute {
+	return map[string]schema.Attribute{
+		"operand": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriteriaOperand,
+		},
+		"criterion": schema.ListNestedAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriteriaCriterion,
+			NestedObject: schema.NestedAttributeObject{
+				Attributes: GroupCriterionSchema(),
+			},
+		},
+	}
+}
+
+// GroupCriterionSchema is a helper function to simplify the GroupCriteriaSchema Schema implementation.
+func GroupCriterionSchema() map[string]schema.Attribute {
+	return map[string]schema.Attribute{
+		"criterion_type": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionType,
+		},
+		"field": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionField,
+		},
+		"operand": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionOperand,
+		},
+		"value": schema.StringAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupCriterionValue,
+		},
 	}
 }

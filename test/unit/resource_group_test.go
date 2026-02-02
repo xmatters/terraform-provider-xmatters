@@ -37,6 +37,17 @@ func TestResourceGroupToModel(t *testing.T) {
 		},
 		ExternalKey:     utils.RandStringPointer(10),
 		ExternallyOwned: utils.RandBoolPointer(),
+		Criteria: &xmatters.SearchCriteria{
+			Operand: utils.RandStringPointer(3),
+			Criterion: []*xmatters.SearchCriterion{
+				{
+					CriterionType: utils.RandStringPointer(10),
+					Field:         utils.RandStringPointer(10),
+					Operand:       utils.RandStringPointer(5),
+					Value:         utils.RandStringPointer(10),
+				},
+			},
+		},
 	}
 
 	type args struct {
@@ -64,6 +75,9 @@ func TestResourceGroupToModel(t *testing.T) {
 					types.StringType,
 					[]attr.Value{},
 				),
+				Criteria: types.ObjectNull(
+					utils.GroupCriteriaObjectType.AttrTypes,
+				),
 			},
 		},
 		{
@@ -74,7 +88,7 @@ func TestResourceGroupToModel(t *testing.T) {
 			},
 			expected: group.GroupModel{
 				ID:              types.StringPointerValue(testGroup.ID),
-				TargetName:      customTypes.StringPointerValue(testGroup.TargetName),
+				Name:            customTypes.StringPointerValue(testGroup.TargetName),
 				Status:          types.StringPointerValue(testGroup.Status),
 				Description:     customTypes.StringPointerValue(testGroup.Description),
 				GroupType:       types.StringPointerValue(testGroup.GroupType),
@@ -84,18 +98,38 @@ func TestResourceGroupToModel(t *testing.T) {
 				Observers: types.SetValueMust(
 					customTypes.CustomStringType{},
 					[]attr.Value{
-						customTypes.StringValue(*testGroup.Observers[0].Name),
+						customTypes.StringPointerValue(testGroup.Observers[0].Name),
 					},
 				),
 				UseDefaultDevices: types.BoolPointerValue(testGroup.UseDefaultDevices),
 				Supervisors: types.SetValueMust(
 					types.StringType,
 					[]attr.Value{
-						types.StringValue(*testGroup.Supervisors[0].ID),
+						types.StringPointerValue(testGroup.Supervisors[0].ID),
 					},
 				),
 				ExternalKey:     customTypes.StringPointerValue(testGroup.ExternalKey),
 				ExternallyOwned: types.BoolPointerValue(testGroup.ExternallyOwned),
+				Criteria: types.ObjectValueMust(
+					utils.GroupCriteriaObjectType.AttrTypes,
+					map[string]attr.Value{
+						"operand": types.StringPointerValue(testGroup.Criteria.Operand),
+						"criterion": types.SetValueMust(
+							utils.GroupCriterionObjectType,
+							[]attr.Value{
+								types.ObjectValueMust(
+									utils.GroupCriterionObjectType.AttrTypes,
+									map[string]attr.Value{
+										"criterion_type": types.StringPointerValue(testGroup.Criteria.Criterion[0].CriterionType),
+										"field":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Field),
+										"operand":        types.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
+										"value":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
+									},
+								),
+							},
+						),
+					},
+				),
 			},
 		},
 	}
@@ -129,6 +163,17 @@ func TestGroupParams(t *testing.T) {
 				ID: utils.RandUUIDPointer(),
 			},
 		},
+		Criteria: &xmatters.SearchCriteria{
+			Operand: utils.RandStringPointer(3),
+			Criterion: []*xmatters.SearchCriterion{
+				{
+					CriterionType: utils.RandStringPointer(10),
+					Field:         utils.RandStringPointer(10),
+					Operand:       utils.RandStringPointer(5),
+					Value:         utils.RandStringPointer(10),
+				},
+			},
+		},
 	}
 	type args struct {
 		diags *diag.Diagnostics
@@ -152,7 +197,7 @@ func TestGroupParams(t *testing.T) {
 			args: args{
 				diags: &diag.Diagnostics{},
 				in: group.GroupModel{
-					TargetName:      customTypes.StringValue(testGroupParams.TargetName),
+					Name:            customTypes.StringValue(testGroupParams.TargetName),
 					AllowDuplicates: types.BoolPointerValue(testGroupParams.AllowDuplicates),
 					Description:     customTypes.StringValue(testGroupParams.Description),
 					ExternalKey:     customTypes.StringValue(testGroupParams.ExternalKey),
@@ -162,7 +207,7 @@ func TestGroupParams(t *testing.T) {
 					Observers: types.SetValueMust(
 						types.StringType,
 						[]attr.Value{
-							types.StringValue(*testGroupParams.Observers[0].Name),
+							types.StringPointerValue(testGroupParams.Observers[0].Name),
 						},
 					),
 					Site:              types.StringValue(testGroupParams.Site),
@@ -171,7 +216,27 @@ func TestGroupParams(t *testing.T) {
 					Supervisors: types.SetValueMust(
 						types.StringType,
 						[]attr.Value{
-							types.StringValue(*testGroupParams.Supervisors[0].ID),
+							types.StringPointerValue(testGroupParams.Supervisors[0].ID),
+						},
+					),
+					Criteria: types.ObjectValueMust(
+						utils.GroupCriteriaObjectType.AttrTypes,
+						map[string]attr.Value{
+							"operand": types.StringPointerValue(testGroupParams.Criteria.Operand),
+							"criterion": types.SetValueMust(
+								utils.GroupCriterionObjectType,
+								[]attr.Value{
+									types.ObjectValueMust(
+										utils.GroupCriterionObjectType.AttrTypes,
+										map[string]attr.Value{
+											"criterion_type": types.StringPointerValue(testGroupParams.Criteria.Criterion[0].CriterionType),
+											"field":          types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Field),
+											"operand":        types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Operand),
+											"value":          types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Value),
+										},
+									),
+								},
+							),
 						},
 					),
 				},

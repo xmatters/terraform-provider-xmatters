@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/xmatters/terraform-provider-xmatters/internal/data-sources/services"
+	"github.com/xmatters/terraform-provider-xmatters/internal/data-sources/group"
 	"github.com/xmatters/terraform-provider-xmatters/internal/describe"
 	"github.com/xmatters/terraform-provider-xmatters/internal/utils"
 	"github.com/xmatters/terraform-provider-xmatters/internal/utils/customTypes"
@@ -77,9 +77,9 @@ func GroupDataSourceSchema() map[string]schema.Attribute {
 			Computed:            true,
 			MarkdownDescription: describe.GroupAllowDuplicates,
 		},
-		"timezone": schema.StringAttribute{
+		"use_default_devices": schema.BoolAttribute{
 			Computed:            true,
-			MarkdownDescription: describe.GroupTimezone,
+			MarkdownDescription: describe.GroupUseDefaultDevices,
 		},
 		"site": schema.StringAttribute{
 			Computed:            true,
@@ -99,16 +99,13 @@ func GroupDataSourceSchema() map[string]schema.Attribute {
 			MarkdownDescription: describe.GroupSupervisors,
 			ElementType:         types.StringType,
 		},
-		"services": schema.SetNestedAttribute{
-			Computed:            true,
-			MarkdownDescription: describe.GroupServices,
-			NestedObject: schema.NestedAttributeObject{
-				Attributes: services.ServiceDataSourceSchema(),
-			},
-		},
 		"group_type": schema.StringAttribute{
 			Computed:            true,
 			MarkdownDescription: describe.GroupType,
+		},
+		"criteria": schema.SingleNestedAttribute{
+			Computed:   true,
+			Attributes: group.GroupCriteriaSchema(),
 		},
 	}
 }
@@ -143,6 +140,34 @@ func GroupsDataSourceSearchSchema() map[string]schema.Attribute {
 // It represents the Provider's optional search parameters to filter the list of groups returned.
 func GroupsDataSourceFiltersSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
+		"created_after": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: describe.GroupsFilterCreatedAfter,
+			Validators: []validator.String{
+				utils.TimestampValidator{},
+			},
+		},
+		"created_before": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: describe.GroupsFilterCreatedBefore,
+			Validators: []validator.String{
+				utils.TimestampValidator{},
+			},
+		},
+		"created_from": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: describe.GroupsFilterCreatedFrom,
+			Validators: []validator.String{
+				utils.TimestampValidator{},
+			},
+		},
+		"created_to": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: describe.GroupsFilterCreatedTo,
+			Validators: []validator.String{
+				utils.TimestampValidator{},
+			},
+		},
 		"group_type": schema.StringAttribute{
 			Optional:            true,
 			MarkdownDescription: describe.GroupsFilterGroupType,
@@ -150,6 +175,10 @@ func GroupsDataSourceFiltersSchema() map[string]schema.Attribute {
 		"member_exists": schema.StringAttribute{
 			Optional:            true,
 			MarkdownDescription: describe.GroupsFilterMemberExists,
+		},
+		"members_license_type": schema.StringAttribute{
+			Optional:            true,
+			MarkdownDescription: describe.GroupsFilterMemberLicenseType,
 		},
 		"members": schema.ListAttribute{
 			Optional:            true,

@@ -128,6 +128,23 @@ func RandStringPointer(strlen int) *string {
 	return &s
 }
 
+func RandOperand() string {
+	operands := []string{
+		"AND",
+		"OR",
+	}
+	return operands[rand.IntN(len(operands))]
+}
+
+func RandOperandPointer() *string {
+	operands := []string{
+		"AND",
+		"OR",
+	}
+	operand := operands[rand.IntN(len(operands))]
+	return &operand
+}
+
 func RandStringList(count, strlen int) []string {
 	var list []string
 	for i := 0; i < count; i++ {

@@ -89,7 +89,7 @@ func GroupCriteriaSchema() map[string]schema.Attribute {
 			Computed:            true,
 			MarkdownDescription: describe.GroupCriteriaOperand,
 		},
-		"criterion": schema.ListNestedAttribute{
+		"criterion": schema.SetNestedAttribute{
 			Computed:            true,
 			MarkdownDescription: describe.GroupCriteriaCriterion,
 			NestedObject: schema.NestedAttributeObject{

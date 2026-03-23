@@ -67,7 +67,7 @@ resource "xmatters_group" "advanced_group" {
 
 Read-Only:
 
-- `criterion` (Attributes List) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--criteria--criterion))
+- `criterion` (Attributes Set) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--criteria--criterion))
 - `operand` (String) Sets whether a user must match all or any of the specified criterion to be included in the group. Available values: - AND: users must match all criterion - OR: users must match at least one criterion.
 
 <a id="nestedatt--criteria--criterion"></a>

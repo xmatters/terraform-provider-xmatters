@@ -129,7 +129,7 @@ Read-Only:
 
 Read-Only:
 
-- `criterion` (Attributes List) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--groups--criteria--criterion))
+- `criterion` (Attributes Set) Set of conditions users must satisfy for inclusion in the dynamic group. (see [below for nested schema](#nestedatt--groups--criteria--criterion))
 - `operand` (String) The operand to use to limit or expand the search query parameter: AND or OR. AND only returns dynamic groups that have all search terms in the name or description. OR returns dynamic groups that have any of the search terms in the name or description.
 
 <a id="nestedatt--groups--criteria--criterion"></a>

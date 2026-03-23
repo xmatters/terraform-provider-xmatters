@@ -101,7 +101,7 @@ Further instruction on acquiring your personal access token can be found by logg
 
 Once you have obtained the token, you can use it in the provider configuration.
 
-# Building The Provider (For Developers)
+## Building The Provider (For Developers)
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine as described in the prerequisites.
 

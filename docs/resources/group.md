@@ -41,6 +41,7 @@ resource "xmatters_group" "advanced_group" {
 ### Required
 
 - `name` (String) Name of the group, up to a maximum of 100 characters.
+- `supervisors` (Set of String) Comma-separated list of unique identifiers (UUID) that represent the group’s supervisors. Supervisors must have the role-based permissions required to supervise the group and the authenticating account must have permission to assign supervisors to the group. At least one supervisor is required.
 
 ### Optional
 
@@ -54,7 +55,6 @@ resource "xmatters_group" "advanced_group" {
 - `observers` (Set of String) Role or roles set as observers for group when the 'observed_by_all' parameter is set to 'false'. Updates overwrite any previously saved observer roles for the group.
 - `site` (String) Unique identifier (UUID) of the site that the group uses for holidays. If this value is not provided, the group is set to not use site holidays.
 - `status` (String) Status of the group in xMatters. Available options are: ACTIVE, INACTIVE. Default is ACTIVE.
-- `supervisors` (Set of String) Comma-separated list of unique identifiers (UUID) that represent the group’s supervisors. Supervisors must have the role-based permissions required to supervise the group and the authenticating account must have permission to assign supervisors to the group. If empty or null, the group will have no supervisors. If the property is omitted from the request, the authenticating user who makes the request is set as the supervisor.
 - `use_default_devices` (Boolean) If set to ‘true’ the group can notify members on their failsafe (default) devices if none of the member's other devices are available.
 
 ### Read-Only

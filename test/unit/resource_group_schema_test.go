@@ -72,3 +72,36 @@ func TestGroupCriteriaSchemaNestedAttributesAreConfigurable(t *testing.T) {
 		}
 	}
 }
+
+func TestGroupResourceSchemaSupervisorsIsRequired(t *testing.T) {
+	r := &groupresource.GroupResource{}
+	resp := &tfresource.SchemaResponse{}
+
+	r.Schema(context.Background(), tfresource.SchemaRequest{}, resp)
+
+	rawSupervisorsAttr, ok := resp.Schema.Attributes["supervisors"]
+	if !ok {
+		t.Fatalf("expected 'supervisors' attribute in group resource schema")
+	}
+
+	supervisorsAttr, ok := rawSupervisorsAttr.(resourceschema.SetAttribute)
+	if !ok {
+		t.Fatalf("expected 'supervisors' to be schema.SetAttribute, got %T", rawSupervisorsAttr)
+	}
+
+	if !supervisorsAttr.Required {
+		t.Fatalf("expected 'supervisors' to be required")
+	}
+
+	if supervisorsAttr.Optional {
+		t.Fatalf("expected 'supervisors' to not be optional")
+	}
+
+	if supervisorsAttr.Computed {
+		t.Fatalf("expected 'supervisors' to not be computed")
+	}
+
+	if len(supervisorsAttr.Validators) < 2 {
+		t.Fatalf("expected 'supervisors' validators to include min length and UUID validation")
+	}
+}

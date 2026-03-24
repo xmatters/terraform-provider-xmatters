@@ -82,11 +82,11 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				MarkdownDescription: describe.GroupResourceUseDefaultDevices,
 			},
 			"supervisors": schema.SetAttribute{
-				Computed:            true,
-				Optional:            true,
+				Required:            true,
 				MarkdownDescription: describe.GroupResourceSupervisors,
 				ElementType:         types.StringType,
 				Validators: []validator.Set{
+					setvalidator.SizeAtLeast(1),
 					// Validator for each string in the list
 					setvalidator.ValueStringsAre(utils.UUIDValidator{}),
 				},

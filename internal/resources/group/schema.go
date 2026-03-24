@@ -124,10 +124,12 @@ func GroupCriteriaSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"operand": schema.StringAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupResourceCriteriaOperand,
 		},
 		"criterion": schema.SetNestedAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupCriteriaCriterion,
 			NestedObject: schema.NestedAttributeObject{
 				Attributes: GroupCriterionSchema(),
@@ -141,18 +143,22 @@ func GroupCriterionSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"criterion_type": schema.StringAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionType,
 		},
 		"field": schema.StringAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionField,
 		},
 		"operand": schema.StringAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionOperand,
 		},
 		"value": schema.StringAttribute{
 			Computed:            true,
+			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionValue,
 		},
 	}

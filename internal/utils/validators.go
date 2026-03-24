@@ -461,7 +461,11 @@ type GroupTypeValidator struct {
 }
 
 func (v GroupTypeValidator) Description(ctx context.Context) string {
-	return fmt.Sprintf("The criteria block can only be set when 'group_type' is '%s'.", v.RequiredValue)
+	return fmt.Sprintf(
+		"The criteria block can only be set when 'group_type' is '%s', and is required when 'group_type' is '%s'.",
+		v.RequiredValue,
+		v.RequiredValue,
+	)
 }
 
 func (v GroupTypeValidator) MarkdownDescription(ctx context.Context) string {
@@ -473,15 +477,28 @@ func (v GroupTypeValidator) ValidateObject(ctx context.Context, req validator.Ob
 	var groupTypeValue types.String
 	req.Config.GetAttribute(ctx, path.Root("group_type"), &groupTypeValue)
 
-	// If criteria is set, group_type must match RequiredValue
-	if !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown() {
-		if groupTypeValue.ValueString() != v.RequiredValue {
-			resp.Diagnostics.AddAttributeError(
-				req.Path,
-				"Invalid criteria",
-				fmt.Sprintf("The criteria block can only be set when 'group_type' is '%s'.", v.RequiredValue),
-			)
-		}
+	// Skip validation until group_type is known.
+	if groupTypeValue.IsUnknown() {
+		return
+	}
+
+	// If criteria is set, group_type must match RequiredValue.
+	if !req.ConfigValue.IsNull() && !req.ConfigValue.IsUnknown() && groupTypeValue.ValueString() != v.RequiredValue {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Invalid criteria",
+			fmt.Sprintf("The criteria block can only be set when 'group_type' is '%s'.", v.RequiredValue),
+		)
+		return
+	}
+
+	// If group_type is RequiredValue, criteria must be set.
+	if req.ConfigValue.IsNull() && groupTypeValue.ValueString() == v.RequiredValue {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Missing criteria",
+			fmt.Sprintf("The criteria block is required when 'group_type' is '%s'.", v.RequiredValue),
+		)
 	}
 }
 

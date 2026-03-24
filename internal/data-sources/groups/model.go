@@ -63,7 +63,8 @@ func (in GroupsModel) APIParams(diags *diag.Diagnostics) xmatters.GetGroupsParam
 		groupsParams.MemberExists = in.Filters.MemberExists.ValueString()
 		groupsParams.MemberLicenseType = in.Filters.MembersLicenseType.ValueString()
 		groupsParams.Members = utils.ExpandStringList(diags, in.Filters.Members)
-		groupsParams.Sites = utils.ExpandStringList(diags, in.Filters.Sites)
+		// Site names can include spaces, so encode each element and preserve comma delimiters in the API client.
+		groupsParams.Sites = utils.ExpandEncodedStringList(diags, in.Filters.Sites)
 		groupsParams.Status = in.Filters.Status.ValueString()
 		groupsParams.Supervisors = utils.ExpandStringList(diags, in.Filters.Supervisors)
 	}

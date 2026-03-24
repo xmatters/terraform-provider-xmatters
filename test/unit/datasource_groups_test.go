@@ -128,6 +128,27 @@ func TestGroupsAPIParams(t *testing.T) {
 			},
 		},
 		{
+			name: "with multi-site names requiring encoding",
+			args: args{
+				diags: &diag.Diagnostics{},
+				model: groups.GroupsModel{
+					Filters: &groups.GroupsFiltersModel{
+						Sites: types.ListValueMust(
+							types.StringType,
+							[]attr.Value{
+								types.StringValue("Default Site"),
+								types.StringValue("Great White North"),
+							},
+						),
+					},
+				},
+			},
+			expect: xmatters.GetGroupsParams{
+				Embed: "supervisors,observers",
+				Sites: "Default+Site,Great+White+North",
+			},
+		},
+		{
 			name: "with options params",
 			args: args{
 				diags: &diag.Diagnostics{},

@@ -243,6 +243,24 @@ func TestGroupParams(t *testing.T) {
 			},
 			expected: testGroupParams,
 		},
+		{
+			name: "explicit empty supervisors",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in: group.GroupModel{
+					Name: customTypes.StringValue(""),
+					Supervisors: types.SetValueMust(
+						types.StringType,
+						[]attr.Value{},
+					),
+				},
+			},
+			expected: xmatters.PushGroupParams{
+				TargetName:  "",
+				Description: "",
+				Supervisors: []*xmatters.ReferenceById{},
+			},
+		},
 	}
 	for _, thisTest := range tests {
 		t.Run(thisTest.name, func(t *testing.T) {

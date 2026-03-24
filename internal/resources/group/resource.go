@@ -87,6 +87,8 @@ func (r *GroupResource) Create(ctx context.Context, req resource.CreateRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	utils.PreserveExplicitEmptyString(plan.GroupType, &state.GroupType)
+	utils.PreserveExplicitEmptySet(plan.Supervisors, &state.Supervisors)
 	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	// Set state to fully populated data
@@ -116,12 +118,15 @@ func (r *GroupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 	}
 
 	// Capture state `lastUpdated` timestamp
+	priorState := state
 	lastUpdated := state.LastUpdated
 	// Overwrite Group with refreshed state
 	state = GroupToModel(&resp.Diagnostics, groupReturn)
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	utils.PreserveExplicitEmptyString(priorState.GroupType, &state.GroupType)
+	utils.PreserveExplicitEmptySet(priorState.Supervisors, &state.Supervisors)
 	// Ensure `last_updated` is preserved and set to the new state
 	state.LastUpdated = lastUpdated
 
@@ -162,6 +167,8 @@ func (r *GroupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	if resp.Diagnostics.HasError() {
 		return
 	}
+	utils.PreserveExplicitEmptyString(plan.GroupType, &state.GroupType)
+	utils.PreserveExplicitEmptySet(plan.Supervisors, &state.Supervisors)
 	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	// Save state to fully populated data

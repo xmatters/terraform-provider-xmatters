@@ -17,3 +17,17 @@ func PreserveExplicitEmptySet(config basetypes.SetValue, state *basetypes.SetVal
 		*state = config
 	}
 }
+
+// PreservePriorStringWhenAPIOmitted keeps prior/configured string state when an API omits a field in its payload.
+func PreservePriorStringWhenAPIOmitted(apiOmitted bool, prior basetypes.StringValue, state *basetypes.StringValue) {
+	if apiOmitted && !prior.IsUnknown() {
+		*state = prior
+	}
+}
+
+// PreservePriorSetWhenAPIOmitted keeps prior/configured set state when an API omits a field in its payload.
+func PreservePriorSetWhenAPIOmitted(apiOmitted bool, prior basetypes.SetValue, state *basetypes.SetValue) {
+	if apiOmitted && !prior.IsUnknown() {
+		*state = prior
+	}
+}

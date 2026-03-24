@@ -206,7 +206,7 @@ func PersonToModel(diags *diag.Diagnostics, person xmatters.Person, plan PersonM
 		TargetName:      customTypes.StringPointerValue(person.TargetName),
 		FirstName:       customTypes.StringPointerValue(person.FirstName),
 		LastName:        customTypes.StringPointerValue(person.LastName),
-		Roles:           plan.Roles,
+		Roles:           utils.FlattenRoleSet(diags, person.Roles),
 		Status:          types.StringPointerValue(person.Status),
 		WebLogin:        customTypes.StringPointerValue(person.WebLogin),
 		Site:            utils.FlattenReferenceID(person.Site),
@@ -214,14 +214,13 @@ func PersonToModel(diags *diag.Diagnostics, person xmatters.Person, plan PersonM
 		Language:        types.StringPointerValue(person.Language),
 		Supervisors:     utils.FlattenSupervisorSet(diags, person.Supervisors),
 		PhoneLogin:      types.StringPointerValue(person.PhoneLogin),
-		PhonePin:        plan.PhonePin,
+		PhonePin:        types.StringNull(),
 		LicenseType:     customTypes.StringPointerValue(person.LicenseType),
 		ExternalKey:     customTypes.StringPointerValue(person.ExternalKey),
 		ExternallyOwned: types.BoolPointerValue(person.ExternallyOwned),
 	}
-	if person.Roles != nil {
-		model.Roles = utils.FlattenRoleSet(diags, person.Roles)
-	}
+	utils.PreservePriorSetWhenAPIOmitted(person.Roles == nil, plan.Roles, &model.Roles)
+	utils.PreservePriorStringWhenAPIOmitted(true, plan.PhonePin, &model.PhonePin)
 	if diags.HasError() {
 		return PersonModel{}
 	}

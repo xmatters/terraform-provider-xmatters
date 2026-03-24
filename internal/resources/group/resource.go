@@ -88,7 +88,7 @@ func (r *GroupResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 	utils.PreserveExplicitEmptyString(plan.GroupType, &state.GroupType)
-	utils.PreserveExplicitEmptySet(plan.Supervisors, &state.Supervisors)
+	utils.PreserveExplicitEmptyString(plan.ExternalKey.StringValue, &state.ExternalKey.StringValue)
 	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	// Set state to fully populated data
@@ -126,7 +126,7 @@ func (r *GroupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 	utils.PreserveExplicitEmptyString(priorState.GroupType, &state.GroupType)
-	utils.PreserveExplicitEmptySet(priorState.Supervisors, &state.Supervisors)
+	utils.PreserveExplicitEmptyString(priorState.ExternalKey.StringValue, &state.ExternalKey.StringValue)
 	// Ensure `last_updated` is preserved and set to the new state
 	state.LastUpdated = lastUpdated
 
@@ -168,7 +168,7 @@ func (r *GroupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 	utils.PreserveExplicitEmptyString(plan.GroupType, &state.GroupType)
-	utils.PreserveExplicitEmptySet(plan.Supervisors, &state.Supervisors)
+	utils.PreserveExplicitEmptyString(plan.ExternalKey.StringValue, &state.ExternalKey.StringValue)
 	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	// Save state to fully populated data

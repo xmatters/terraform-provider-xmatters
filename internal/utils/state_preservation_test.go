@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/xmatters/terraform-provider-xmatters/internal/utils/customTypes"
 )
 
 func TestPreserveExplicitEmptyString(t *testing.T) {
@@ -48,5 +49,63 @@ func TestPreserveExplicitEmptyHelpers_DoNotOverrideNonEmpty(t *testing.T) {
 	PreserveExplicitEmptySet(setConfig, &setState)
 	if len(setState.Elements()) != 1 {
 		t.Fatalf("expected non-empty set state to remain unchanged, got %d elements", len(setState.Elements()))
+	}
+}
+
+func TestPreserveExplicitEmptyString_WithCustomStringValue(t *testing.T) {
+	config := customTypes.StringValue("")
+	state := customTypes.StringPointerValue(nil)
+
+	PreserveExplicitEmptyString(config.StringValue, &state.StringValue)
+
+	if state.IsNull() {
+		t.Fatalf("expected state custom string to be explicit empty string, got null")
+	}
+	if state.ValueString() != "" {
+		t.Fatalf("expected state custom string to remain explicit empty value, got %q", state.ValueString())
+	}
+}
+
+func TestPreservePriorStringWhenAPIOmitted(t *testing.T) {
+	prior := types.StringValue("1234")
+	state := types.StringNull()
+
+	PreservePriorStringWhenAPIOmitted(true, prior, &state)
+
+	if state.IsNull() || state.ValueString() != "1234" {
+		t.Fatalf("expected state string to preserve prior value when API omits field, got %q", state.ValueString())
+	}
+}
+
+func TestPreservePriorSetWhenAPIOmitted(t *testing.T) {
+	prior := types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{
+		customTypes.StringValue("Company Supervisor"),
+	})
+	state := types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{})
+
+	PreservePriorSetWhenAPIOmitted(true, prior, &state)
+
+	if len(state.Elements()) != 1 {
+		t.Fatalf("expected state set to preserve prior value when API omits field, got %d elements", len(state.Elements()))
+	}
+}
+
+func TestPreservePriorHelpers_DoNotOverrideWhenNotOmitted(t *testing.T) {
+	stringPrior := types.StringValue("1234")
+	stringState := types.StringValue("5678")
+	PreservePriorStringWhenAPIOmitted(false, stringPrior, &stringState)
+	if stringState.ValueString() != "5678" {
+		t.Fatalf("expected string state to remain unchanged when API did not omit field, got %q", stringState.ValueString())
+	}
+
+	setPrior := types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{
+		customTypes.StringValue("Company Supervisor"),
+	})
+	setState := types.SetValueMust(customTypes.CustomStringType{}, []attr.Value{
+		customTypes.StringValue("Group Supervisor"),
+	})
+	PreservePriorSetWhenAPIOmitted(false, setPrior, &setState)
+	if len(setState.Elements()) != 1 {
+		t.Fatalf("expected set state to remain unchanged when API did not omit field, got %d elements", len(setState.Elements()))
 	}
 }

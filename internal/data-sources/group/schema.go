@@ -41,6 +41,10 @@ func GroupDataSourceSchema() map[string]schema.Attribute {
 			Computed:            true,
 			MarkdownDescription: describe.GroupStatus,
 		},
+		"use_default_devices": schema.BoolAttribute{
+			Computed:            true,
+			MarkdownDescription: describe.GroupUseDefaultDevices,
+		},
 		"external_key": schema.StringAttribute{
 			Computed:            true,
 			MarkdownDescription: describe.GroupExternalKey,

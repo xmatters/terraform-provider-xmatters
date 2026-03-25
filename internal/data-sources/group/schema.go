@@ -111,10 +111,12 @@ func GroupCriterionSchema() map[string]schema.Attribute {
 			MarkdownDescription: describe.GroupCriterionField,
 		},
 		"operand": schema.StringAttribute{
+			CustomType:          customTypes.CustomStringType{},
 			Computed:            true,
 			MarkdownDescription: describe.GroupCriterionOperand,
 		},
 		"value": schema.StringAttribute{
+			CustomType:          customTypes.CustomStringType{},
 			Computed:            true,
 			MarkdownDescription: describe.GroupCriterionValue,
 		},

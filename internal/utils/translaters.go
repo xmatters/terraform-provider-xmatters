@@ -109,8 +109,8 @@ var (
 		AttrTypes: map[string]attr.Type{
 			"criterion_type": types.StringType,
 			"field":          types.StringType,
-			"operand":        types.StringType,
-			"value":          types.StringType,
+			"operand":        customTypes.CustomStringType{},
+			"value":          customTypes.CustomStringType{},
 		},
 	}
 
@@ -356,8 +356,8 @@ func FlattenGroupCriterionObject(diags *diag.Diagnostics, in *xmatters.SearchCri
 		map[string]attr.Value{
 			"criterion_type": types.StringPointerValue(in.CriterionType),
 			"field":          types.StringPointerValue(in.Field),
-			"operand":        types.StringPointerValue(in.Operand),
-			"value":          types.StringPointerValue(in.Value),
+			"operand":        customTypes.StringPointerValue(in.Operand),
+			"value":          customTypes.StringPointerValue(in.Value),
 		},
 	)
 	if diags.Append(d...); d.HasError() {

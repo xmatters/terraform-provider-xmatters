@@ -288,8 +288,8 @@ func TestFlattenGroupObject(t *testing.T) {
 										map[string]attr.Value{
 											"criterion_type": types.StringPointerValue(testGroup.Criteria.Criterion[0].CriterionType),
 											"field":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Field),
-											"operand":        types.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
-											"value":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
+											"operand":        customTypes.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
+											"value":          customTypes.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
 										},
 									),
 								},
@@ -617,8 +617,8 @@ func TestFlattenGroupCriteriaObject(t *testing.T) {
 								map[string]attr.Value{
 									"criterion_type": types.StringPointerValue(testCriteria.Criterion[0].CriterionType),
 									"field":          types.StringPointerValue(testCriteria.Criterion[0].Field),
-									"operand":        types.StringPointerValue(testCriteria.Criterion[0].Operand),
-									"value":          types.StringPointerValue(testCriteria.Criterion[0].Value),
+									"operand":        customTypes.StringPointerValue(testCriteria.Criterion[0].Operand),
+									"value":          customTypes.StringPointerValue(testCriteria.Criterion[0].Value),
 								},
 							),
 						},
@@ -670,8 +670,8 @@ func TestFlattenGroupCriterionObject(t *testing.T) {
 				map[string]attr.Value{
 					"criterion_type": types.StringPointerValue(testCriterion.CriterionType),
 					"field":          types.StringPointerValue(testCriterion.Field),
-					"operand":        types.StringPointerValue(testCriterion.Operand),
-					"value":          types.StringPointerValue(testCriterion.Value),
+					"operand":        customTypes.StringPointerValue(testCriterion.Operand),
+					"value":          customTypes.StringPointerValue(testCriterion.Value),
 				},
 			),
 		},
@@ -1266,8 +1266,8 @@ func TestFlattenGroupList(t *testing.T) {
 												map[string]attr.Value{
 													"criterion_type": types.StringPointerValue(testGroups[0].Criteria.Criterion[0].CriterionType),
 													"field":          types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Field),
-													"operand":        types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Operand),
-													"value":          types.StringPointerValue(testGroups[0].Criteria.Criterion[0].Value),
+													"operand":        customTypes.StringPointerValue(testGroups[0].Criteria.Criterion[0].Operand),
+													"value":          customTypes.StringPointerValue(testGroups[0].Criteria.Criterion[0].Value),
 												},
 											),
 										},
@@ -1314,8 +1314,8 @@ func TestFlattenGroupList(t *testing.T) {
 												map[string]attr.Value{
 													"criterion_type": types.StringPointerValue(testGroups[1].Criteria.Criterion[0].CriterionType),
 													"field":          types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Field),
-													"operand":        types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Operand),
-													"value":          types.StringPointerValue(testGroups[1].Criteria.Criterion[0].Value),
+													"operand":        customTypes.StringPointerValue(testGroups[1].Criteria.Criterion[0].Operand),
+													"value":          customTypes.StringPointerValue(testGroups[1].Criteria.Criterion[0].Value),
 												},
 											),
 										},
@@ -2138,8 +2138,8 @@ func TestFlattenGroupCriterionSet(t *testing.T) {
 						map[string]attr.Value{
 							"criterion_type": types.StringPointerValue(testCriterion[0].CriterionType),
 							"field":          types.StringPointerValue(testCriterion[0].Field),
-							"operand":        types.StringPointerValue(testCriterion[0].Operand),
-							"value":          types.StringPointerValue(testCriterion[0].Value),
+							"operand":        customTypes.StringPointerValue(testCriterion[0].Operand),
+							"value":          customTypes.StringPointerValue(testCriterion[0].Value),
 						},
 					),
 					types.ObjectValueMust(
@@ -2147,8 +2147,8 @@ func TestFlattenGroupCriterionSet(t *testing.T) {
 						map[string]attr.Value{
 							"criterion_type": types.StringPointerValue(testCriterion[1].CriterionType),
 							"field":          types.StringPointerValue(testCriterion[1].Field),
-							"operand":        types.StringPointerValue(testCriterion[1].Operand),
-							"value":          types.StringPointerValue(testCriterion[1].Value),
+							"operand":        customTypes.StringPointerValue(testCriterion[1].Operand),
+							"value":          customTypes.StringPointerValue(testCriterion[1].Value),
 						},
 					),
 				},

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/mail"
 	"regexp"
+	"strings"
 	"time"
 
 	"golang.org/x/text/language"
@@ -34,11 +35,20 @@ func (v UUIDValidator) ValidateString(ctx context.Context, req validator.StringR
 	if req.ConfigValue.IsNull() || req.ConfigValue.IsUnknown() {
 		return
 	}
-	if _, err := uuid.Parse(req.ConfigValue.ValueString()); err != nil {
+	value := req.ConfigValue.ValueString()
+	if strings.TrimSpace(value) != value {
 		resp.Diagnostics.AddAttributeError(
 			req.Path,
 			"Invalid UUID",
-			fmt.Sprintf("The value provided is not a valid UUID: %s. Err: %s", req.ConfigValue.ValueString(), err.Error()),
+			fmt.Sprintf("The value provided is not a valid UUID: %s. Leading or trailing whitespace is not allowed.", value),
+		)
+		return
+	}
+	if _, err := uuid.Parse(value); err != nil {
+		resp.Diagnostics.AddAttributeError(
+			req.Path,
+			"Invalid UUID",
+			fmt.Sprintf("The value provided is not a valid UUID: %s. Err: %s", value, err.Error()),
 		)
 	}
 }

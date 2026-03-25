@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/setvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
@@ -50,6 +51,9 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Computed:            true,
 				Optional:            true,
 				MarkdownDescription: describe.GroupResourceType,
+				Validators: []validator.String{
+					stringvalidator.OneOf("ON_CALL", "DYNAMIC", "BROADCAST"),
+				},
 			},
 			"allow_duplicates": schema.BoolAttribute{
 				Computed:            true,
@@ -126,6 +130,9 @@ func GroupCriteriaSchema() map[string]schema.Attribute {
 			Computed:            true,
 			Optional:            true,
 			MarkdownDescription: describe.GroupResourceCriteriaOperand,
+			Validators: []validator.String{
+				stringvalidator.OneOf("AND", "OR"),
+			},
 		},
 		"criterion": schema.SetNestedAttribute{
 			Computed:            true,
@@ -145,18 +152,26 @@ func GroupCriterionSchema() map[string]schema.Attribute {
 			Computed:            true,
 			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionType,
+			Validators: []validator.String{
+				stringvalidator.OneOf("BASIC_FIELD", "CUSTOM_FIELD"),
+			},
 		},
 		"field": schema.StringAttribute{
 			Computed:            true,
 			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionField,
+			Validators: []validator.String{
+				stringvalidator.OneOf("FIRST_NAME", "LAST_NAME", "SITE", "USER_ID", "WEB_LOGIN", "ROLE_NAME"),
+			},
 		},
 		"operand": schema.StringAttribute{
+			CustomType:          customTypes.CustomStringType{},
 			Computed:            true,
 			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionOperand,
 		},
 		"value": schema.StringAttribute{
+			CustomType:          customTypes.CustomStringType{},
 			Computed:            true,
 			Optional:            true,
 			MarkdownDescription: describe.GroupCriterionValue,

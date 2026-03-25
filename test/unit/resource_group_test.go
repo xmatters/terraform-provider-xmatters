@@ -122,8 +122,8 @@ func TestResourceGroupToModel(t *testing.T) {
 									map[string]attr.Value{
 										"criterion_type": types.StringPointerValue(testGroup.Criteria.Criterion[0].CriterionType),
 										"field":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Field),
-										"operand":        types.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
-										"value":          types.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
+										"operand":        customTypes.StringPointerValue(testGroup.Criteria.Criterion[0].Operand),
+										"value":          customTypes.StringPointerValue(testGroup.Criteria.Criterion[0].Value),
 									},
 								),
 							},
@@ -231,8 +231,8 @@ func TestGroupParams(t *testing.T) {
 										map[string]attr.Value{
 											"criterion_type": types.StringPointerValue(testGroupParams.Criteria.Criterion[0].CriterionType),
 											"field":          types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Field),
-											"operand":        types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Operand),
-											"value":          types.StringPointerValue(testGroupParams.Criteria.Criterion[0].Value),
+											"operand":        customTypes.StringPointerValue(testGroupParams.Criteria.Criterion[0].Operand),
+											"value":          customTypes.StringPointerValue(testGroupParams.Criteria.Criterion[0].Value),
 										},
 									),
 								},

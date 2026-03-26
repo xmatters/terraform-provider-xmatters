@@ -45,7 +45,7 @@ type GroupsOptionsModel struct {
 // APIParams returns the xmatters.GetGroupsParams object based on the GroupsModel instance.
 func (in GroupsModel) APIParams(diags *diag.Diagnostics) xmatters.GetGroupsParams {
 	groupsParams := xmatters.GetGroupsParams{
-		Embed: "supervisors,observers",
+		Embed: "supervisors,observers,criteria",
 	}
 	// Check for user provider Search fields
 	if in.Search != nil {

@@ -43,6 +43,7 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			"description": schema.StringAttribute{
 				CustomType:          customTypes.CustomStringType{},
+				Computed:            true,
 				Optional:            true,
 				MarkdownDescription: describe.GroupResourceDescription,
 			},
@@ -73,6 +74,7 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 			},
 			// Add validation that prevents observers from being set if observed_by_all is true
 			"observers": schema.SetAttribute{
+				Computed:            true,
 				Optional:            true,
 				MarkdownDescription: describe.GroupResourceObservers,
 				ElementType:         customTypes.CustomStringType{},

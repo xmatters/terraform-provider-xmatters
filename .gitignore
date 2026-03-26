@@ -23,4 +23,4 @@ terraform-provider-xmatters
 .gitignore
 
 # Acceptance Tests
-/internal/test/acceptance*
+test/acceptance*

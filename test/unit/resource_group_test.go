@@ -10,6 +10,7 @@ import (
 	"github.com/xmatters/terraform-provider-xmatters/internal/resources/group"
 	"github.com/xmatters/terraform-provider-xmatters/internal/utils"
 	"github.com/xmatters/terraform-provider-xmatters/internal/utils/customTypes"
+	"github.com/xmatters/terraform-provider-xmatters/internal/utils/helpers"
 	"github.com/xmatters/xmatters-go"
 )
 
@@ -146,7 +147,7 @@ func TestGroupParams(t *testing.T) {
 		TargetName:      utils.RandString(10),
 		AllowDuplicates: utils.RandBoolPointer(),
 		Description:     utils.RandString(10),
-		ExternalKey:     utils.RandString(10),
+		ExternalKey:     utils.RandStringPointer(10),
 		ExternallyOwned: utils.RandBoolPointer(),
 		GroupType:       utils.RandString(5),
 		ObservedByAll:   utils.RandBoolPointer(),
@@ -200,7 +201,7 @@ func TestGroupParams(t *testing.T) {
 					Name:            customTypes.StringValue(testGroupParams.TargetName),
 					AllowDuplicates: types.BoolPointerValue(testGroupParams.AllowDuplicates),
 					Description:     customTypes.StringValue(testGroupParams.Description),
-					ExternalKey:     customTypes.StringValue(testGroupParams.ExternalKey),
+					ExternalKey:     customTypes.StringPointerValue(testGroupParams.ExternalKey),
 					ExternallyOwned: types.BoolPointerValue(testGroupParams.ExternallyOwned),
 					GroupType:       types.StringValue(testGroupParams.GroupType),
 					ObservedByAll:   types.BoolPointerValue(testGroupParams.ObservedByAll),
@@ -259,6 +260,19 @@ func TestGroupParams(t *testing.T) {
 				TargetName:  "",
 				Description: "",
 				Supervisors: []*xmatters.ReferenceById{},
+			},
+		},
+		{
+			name: "explicit empty external key",
+			args: args{
+				diags: &diag.Diagnostics{},
+				in: group.GroupModel{
+					ExternalKey: customTypes.StringValue(""),
+				},
+			},
+			expected: xmatters.PushGroupParams{
+				Description: "",
+				ExternalKey: helpers.StringPointer(""),
 			},
 		},
 	}

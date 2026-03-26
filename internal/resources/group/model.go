@@ -34,7 +34,7 @@ func (in GroupModel) GroupParams(diags *diag.Diagnostics) xmatters.PushGroupPara
 		ID:          in.ID.ValueString(),
 		TargetName:  in.Name.ValueString(),
 		Description: in.Description.ValueString(),
-		ExternalKey: in.ExternalKey.ValueString(),
+		ExternalKey: in.ExternalKey.ValueStringPointer(),
 		GroupType:   in.GroupType.ValueString(),
 		Observers:   utils.ExpandReferenceNameSet(diags, in.Observers),
 		Site:        in.Site.ValueString(),

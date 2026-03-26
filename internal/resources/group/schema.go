@@ -124,16 +124,14 @@ func (r *GroupResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 func GroupCriteriaSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"operand": schema.StringAttribute{
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupResourceCriteriaOperand,
 			Validators: []validator.String{
 				stringvalidator.OneOf("AND", "OR"),
 			},
 		},
 		"criterion": schema.SetNestedAttribute{
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupCriteriaCriterion,
 			NestedObject: schema.NestedAttributeObject{
 				Attributes: GroupCriterionSchema(),
@@ -146,16 +144,14 @@ func GroupCriteriaSchema() map[string]schema.Attribute {
 func GroupCriterionSchema() map[string]schema.Attribute {
 	return map[string]schema.Attribute{
 		"criterion_type": schema.StringAttribute{
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupCriterionType,
 			Validators: []validator.String{
 				stringvalidator.OneOf("BASIC_FIELD", "CUSTOM_FIELD"),
 			},
 		},
 		"field": schema.StringAttribute{
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupCriterionField,
 			Validators: []validator.String{
 				stringvalidator.OneOf("FIRST_NAME", "LAST_NAME", "SITE", "USER_ID", "WEB_LOGIN", "ROLE_NAME"),
@@ -163,14 +159,12 @@ func GroupCriterionSchema() map[string]schema.Attribute {
 		},
 		"operand": schema.StringAttribute{
 			CustomType:          customTypes.CustomStringType{},
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupCriterionOperand,
 		},
 		"value": schema.StringAttribute{
 			CustomType:          customTypes.CustomStringType{},
-			Computed:            true,
-			Optional:            true,
+			Required:            true,
 			MarkdownDescription: describe.GroupCriterionValue,
 		},
 	}

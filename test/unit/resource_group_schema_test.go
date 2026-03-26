@@ -32,7 +32,7 @@ func TestGroupResourceSchemaCriteriaIsConfigurable(t *testing.T) {
 	}
 }
 
-func TestGroupCriteriaSchemaNestedAttributesAreConfigurable(t *testing.T) {
+func TestGroupCriteriaSchemaNestedAttributesAreRequiredWhenConfigured(t *testing.T) {
 	criteriaAttrs := groupresource.GroupCriteriaSchema()
 
 	rawOperandAttr, ok := criteriaAttrs["operand"]
@@ -43,8 +43,8 @@ func TestGroupCriteriaSchemaNestedAttributesAreConfigurable(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected 'operand' to be schema.StringAttribute, got %T", rawOperandAttr)
 	}
-	if !operandAttr.Optional {
-		t.Fatalf("expected 'criteria.operand' to be optional")
+	if !operandAttr.Required {
+		t.Fatalf("expected 'criteria.operand' to be required")
 	}
 	if len(operandAttr.Validators) == 0 {
 		t.Fatalf("expected 'criteria.operand' to have validators")
@@ -58,8 +58,8 @@ func TestGroupCriteriaSchemaNestedAttributesAreConfigurable(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected 'criterion' to be schema.SetNestedAttribute, got %T", rawCriterionAttr)
 	}
-	if !criterionAttr.Optional {
-		t.Fatalf("expected 'criteria.criterion' to be optional")
+	if !criterionAttr.Required {
+		t.Fatalf("expected 'criteria.criterion' to be required")
 	}
 
 	criterionObjectAttrs := groupresource.GroupCriterionSchema()
@@ -72,8 +72,8 @@ func TestGroupCriteriaSchemaNestedAttributesAreConfigurable(t *testing.T) {
 		if !ok {
 			t.Fatalf("expected '%s' to be schema.StringAttribute, got %T", field, rawFieldAttr)
 		}
-		if !fieldAttr.Optional {
-			t.Fatalf("expected 'criteria.criterion.%s' to be optional", field)
+		if !fieldAttr.Required {
+			t.Fatalf("expected 'criteria.criterion.%s' to be required", field)
 		}
 	}
 
